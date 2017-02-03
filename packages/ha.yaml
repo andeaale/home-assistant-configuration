@@ -1,0 +1,96 @@
+# HOME ASSISTANT PACKAGE
+#----------------------------------------------------------------
+
+homeassistant:
+  customize:
+  #----------------------------------------------------------------
+
+    script.backup:
+      icon: mdi:zip-box
+      friendly_name: Backup Home Assistant
+
+automation:
+#----------------------------------------------------------------
+
+  # Notify when Home Assistant starts
+  - alias: NOTIFY (START) Home Assistant
+    hide_entity: True
+    trigger:
+      platform: event
+      event_type: homeassistant_start
+    condition:
+      - condition: state
+        entity_id: input_boolean.options_notifications_push
+        state: 'on'
+    action:
+      - service: notify.pushetta_jesse
+        data:
+          message: "Home Assistant Started"
+          title: ""
+
+  # Delay automations that trigger on restart; i.e. presence-detection
+  - alias: delay on restart
+    hide_entity: True
+    trigger:
+      platform: event
+      event_type: homeassistant_start
+
+    action:
+      - service: automation.turn_off
+        entity_id: automation.notify_open_close_door
+      - service: automation.turn_off
+        entity_id: automation.notify_home_resident
+
+      - delay:
+          minutes: 1
+
+      - service: automation.turn_on
+        entity_id: automation.notify_open_close_door
+      - service: automation.turn_on
+        entity_id: automation.notify_home_resident
+
+  # Notify when Home Assistant has a new update pending
+  - alias: NOTIFY (UPDATE) Home Assistant
+    hide_entity: True
+    trigger:
+      - platform: state
+        entity_id: updater.updater
+    condition:
+      - condition: state
+        entity_id: input_boolean.options_notifications_push
+        state: 'on'
+    action:
+      - service: notify.pushetta_jesse
+        data_template:
+          message: "Home Assistant {{ states.updater.updater.state }} is now available."
+          title: ""
+
+  # Backup Home Assistant config files daily
+  - alias: BACKUP (DAILY) Home Assistant
+    hide_entity: True
+    trigger:
+      platform: time
+      hours: 1
+      minutes: 1
+      seconds: 0
+    action:
+      - service: shell_command.backup
+
+shell_command:
+#----------------------------------------------------------------
+
+  # BACKUP - 1 FILE PER MONTH, OVERWRITE
+  # 1. Run 'sudo apt-get install zip unzip'
+  # 2. Map //server/share to /wherever/you/want by adding (and rebooting) to /etc/fstab:
+  # //<ip_address>/homes  /mnt/d8/homes  cifs  username=<username>,password=<password>,iocharset=utf8,sec=ntlm  0  0
+  # 3. Add 'mount -a' towards the end of /etc/rc.local
+  # 4. Run 'sudo raspi-config' and enable 'Wait for Network at Boot'
+  # 5. Give hass sudo rights, run 'sudo visudo' and add: hass    ALL=(ALL:ALL) NOPASSWD:ALL
+  backup: sudo zip -r "/mnt/d8/homes/jesse/Coding/Raspberry Pi/Home Assistant/HA Configs/backup-$(date +"%m%Y").zip" /home/hass/.homeassistant
+
+script:
+#----------------------------------------------------------------
+  backup:
+    alias: Backup Home Assistant
+    sequence:
+      - service: shell_command.backup_zip

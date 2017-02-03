@@ -1,0 +1,67 @@
+# DOOR PACKAGE
+# Items common across all doors
+#----------------------------------------------------------------
+
+automation:
+#----------------------------------------------------------------
+
+  # NOTIFICATIONS
+  #----------------------------------------------------------------
+
+  # Alert when doors open and close
+  - alias: NOTIFY (OPEN CLOSE) Door
+    hide_entity: True
+    trigger:
+      - platform: state
+        entity_id:
+          - sensor.garage_door
+          - sensor.front_door
+          - sensor.mudroom_door
+    condition:
+      - condition: state
+        entity_id: input_boolean.options_notifications_push
+        state: 'on'
+    action:
+      - service: notify.pushetta_carinajesse
+        data_template:
+          message: >-
+            {{ trigger.to_state.attributes.friendly_name }} {{ trigger.to_state.state }}
+          title: >-
+            {%- if is_state("alarm_control_panel.alarm", "armed_away") or
+              is_state("alarm_control_panel.alarm", "armed_home") -%}
+              ALARM TRIGGERED -
+            {%- else -%}
+            {%- endif %}
+
+sensor:
+#----------------------------------------------------------------
+
+  # Summary
+  - platform: template
+    sensors:
+      doors:
+        friendly_name: Doors
+        unit_of_measurement: 'On'
+        value_template: >
+          {% set total = 0 %}
+
+          {% if is_state('binary_sensor.mudroom_door_sensor_sensor_40_0', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+          {% if is_state('binary_sensor.front_door_sensor_sensor_42_0', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+
+          {{total}}
+
+group:
+#----------------------------------------------------------------
+
+  doors_all:
+    name: Doors
+    view: no
+    icon: mdi:glassdoor
+    entities:
+    - sensor.garage_door
+    - sensor.front_door
+    - sensor.mudroom_door

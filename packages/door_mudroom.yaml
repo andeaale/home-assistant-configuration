@@ -1,0 +1,74 @@
+# MUDROOM DOOR PACKAGE
+# MUDROOM door open/close sensor and future door lock
+#----------------------------------------------------------------
+
+homeassistant:
+  customize:
+  #----------------------------------------------------------------
+
+    sensor.mudroom_door:
+      icon: mdi:glassdoor
+      friendly_name: Mudroom Door
+
+    # Hide raw sensor
+    binary_sensor.mudroom_door_sensor_sensor_40_0:
+      hidden: true
+
+sensor:
+#----------------------------------------------------------------
+  - platform: template
+    sensors:
+      mudroom_door:
+        friendly_name: 'Mudroom Door'
+        value_template: >-
+          {% if states.binary_sensor.mudroom_door_sensor_sensor_40_0.state %}
+            {% if is_state('binary_sensor.mudroom_door_sensor_sensor_40_0', 'off') %}
+              Closed
+            {% else %}
+              Opened
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+
+
+# automation:
+# #----------------------------------------------------------------
+#
+#   # NOTIFICATIONS
+#   #----------------------------------------------------------------
+#   - alias: NOTIFY (OPEN) Mudroom Door
+#     hide_entity: True
+#     trigger:
+#       - platform: state
+#         entity_id: binary_sensor.mudroom_door_sensor_sensor_40_0
+#         from: 'off'
+#         to: 'on'
+#     condition:
+#       - condition: state
+#         entity_id: input_boolean.options_notifications_push
+#         state: 'on'
+#
+#     action:
+#         service: notify.pushetta_carinajesse
+#         data:
+#           message: "Mudroom Door Opened"
+#           title: ""
+#
+#   - alias: NOTIFY (CLOSE) Mudroom Door
+#     hide_entity: True
+#     trigger:
+#       - platform: state
+#         entity_id: binary_sensor.mudroom_door_sensor_sensor_40_0
+#         from: 'on'
+#         to: 'off'
+#     condition:
+#       - condition: state
+#         entity_id: input_boolean.options_notifications_push
+#         state: 'on'
+#
+#     action:
+#         service: notify.pushetta_carinajesse
+#         data:
+#           message: "Mudroom Door Closed"
+#           title: ""

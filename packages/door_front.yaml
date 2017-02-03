@@ -1,0 +1,71 @@
+# FRONT DOOR PACKAGE
+# Front door open/close sensor and future door lock
+#----------------------------------------------------------------
+
+homeassistant:
+  customize:
+  #----------------------------------------------------------------
+
+    sensor.front_door:
+      icon: mdi:glassdoor
+      friendly_name: Front Door
+
+    # Hide raw sensor
+    binary_sensor.front_door_sensor_sensor_42_0:
+      hidden: true
+
+sensor:
+#----------------------------------------------------------------
+  - platform: template
+    sensors:
+      front_door:
+        friendly_name: 'Front Door'
+        value_template: >-
+          {% if states.binary_sensor.front_door_sensor_sensor_42_0.state %}
+            {% if is_state('binary_sensor.front_door_sensor_sensor_42_0', 'off') %}
+              Closed
+            {% else %}
+              Opened
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+
+# automation:
+# #----------------------------------------------------------------
+#
+#   # NOTIFICATIONS
+#   #----------------------------------------------------------------
+#   - alias: "NOTFIY (OPEN) Front Door"
+#     hide_entity: True
+#     trigger:
+#       - platform: state
+#         entity_id: binary_sensor.front_door_sensor_sensor_42_0
+#         from: 'off'
+#         to: 'on'
+#     condition:
+#       - condition: state
+#         entity_id: input_boolean.options_notifications_push
+#         state: 'on'
+#     action:
+#         service: notify.pushetta_carinajesse
+#         data:
+#           message: "Front Door Opened"
+#           title: ""
+#
+#   - alias: "NOTIFY (CLOSE) Front Door"
+#     hide_entity: True
+#     trigger:
+#       - platform: state
+#         entity_id: binary_sensor.front_door_sensor_sensor_42_0
+#         from: 'on'
+#         to: 'off'
+#     condition:
+#       - condition: state
+#         entity_id: input_boolean.options_notifications_push
+#         state: 'on'
+#     action:
+#         service: notify.pushetta_carinajesse
+#         data:
+#           message: "Front Door Closed"
+#           title: ""

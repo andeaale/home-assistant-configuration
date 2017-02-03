@@ -1,0 +1,59 @@
+# GUESTS PACKAGE
+# Notifies and performs automations when key guests arrive
+#----------------------------------------------------------------
+
+automation:
+#----------------------------------------------------------------
+
+  # NOTIFICATIONS
+  #----------------------------------------------------------------
+
+  # Send a notification when key guests arrive
+  - alias: NOTIFY (HOME) Guest
+    hide_entity: True
+    trigger:
+      - platform: state
+        entity_id:
+          - device_tracker.PhoneCida
+          - device_tracker.PhoneCamilla
+          - device_tracker.PhoneMariana
+          - device_tracker.PhoneEdgar
+        from: 'not_home'
+        to: 'home'
+    condition:
+      - condition: state
+        entity_id: input_boolean.options_notifications_push
+        state: 'on'
+    action:
+      - service: notify.pushetta_carinajesse
+        data_template:
+          message: "{{ trigger.entity_id.split('.')[1].lower().replace('phone', '').title() }} has arrived"
+          title: ""
+
+  # Announce over all Chromecast Audios when key guests arrive
+  - alias: SPEAK (HOME) Resident
+    hide_entity: True
+    trigger:
+      - platform: state
+        entity_id:
+          - device_tracker.PhoneCida
+          - device_tracker.PhoneCamilla
+          - device_tracker.PhoneMariana
+          - device_tracker.PhoneEdgar
+        from: 'not_home'
+        to: 'home'
+    #Only speak between 8AM and 9PM
+    condition:
+      - condition: time
+        after: '8:00:00'
+      - condition: time
+        before: '21:00:00'
+      - condition: state
+        entity_id: input_boolean.options_notifications_speech
+        state: 'on'
+    action:
+      - service: tts.google_say
+        #entity_id: media_player.living_room
+        data_template:
+          message: "Attention.  {{ trigger.entity_id.split('.')[1].lower().replace('phone', '').title() }} has arrived"
+          cache: false

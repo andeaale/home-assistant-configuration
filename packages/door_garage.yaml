@@ -1,0 +1,184 @@
+# GARAGE DOOR PACKAGE
+# Garage door opener, open/close sensor, notifications, automations, etc
+#----------------------------------------------------------------
+
+homeassistant:
+  customize:
+  #----------------------------------------------------------------
+
+    switch.garage_door_opener:
+      icon: mdi:table-large
+      friendly_name: Garage Door Opener
+
+    sensor.garage_door:
+      icon: mdi:table-large
+      friendly_name: Garage Door
+
+    binary_sensor.garage_door_tilt_sensor_sensor_27_0:
+      hidden: true
+
+    sensor.garage_door_tilt_sensor_alarm_level_27_1:
+      hidden: true
+
+    sensor.garage_door_tilt_sensor_alarm_type_27_0:
+      hidden: true
+
+    sensor.garage_door_tilt_sensor_burglar_27_10:
+      hidden: true
+
+    sensor.garage_door_tilt_sensor_sourcenodeid_27_2:
+      hidden: true
+
+    switch.garage_door_opener_switch_28_0:
+      hidden: true
+
+sensor:
+#----------------------------------------------------------------
+  - platform: template
+    sensors:
+      garage_door:
+        friendly_name: 'Garage Door'
+        value_template: >-
+          {% if states.binary_sensor.garage_door_tilt_sensor_sensor_27_0.state %}
+            {% if is_state('binary_sensor.garage_door_tilt_sensor_sensor_27_0', 'off') %}
+              Closed
+            {% else %}
+              Opened
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+
+switch:
+#----------------------------------------------------------------
+  - platform: template
+    switches:
+      garage_door_opener:
+        friendly_name: 'Garage Door Opener'
+        value_template:  '{{ states.binary_sensor.garage_door_tilt_sensor_sensor_27_0.state }}'
+        turn_on:
+          service: script.turn_on
+          entity_id: script.press_garage_door_opener
+        turn_off:
+          service: script.turn_on
+          entity_id: script.press_garage_door_opener
+        entity_id: binary_sensor.garage_door_tilt_sensor_sensor_27_0
+
+script:
+#----------------------------------------------------------------
+  press_garage_door_opener:
+    alias: 'Press Garage Door Opener'
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.garage_door_opener_switch_28_0
+      - delay:
+          seconds: 2
+      - service: switch.turn_off
+        entity_id: switch.garage_door_opener_switch_28_0
+
+
+automation:
+#----------------------------------------------------------------
+
+  # Turn off lights when Garage Closed
+  - alias: AUTO OFF (GARAGE CLOSE) Driveway and Mudroom Entrance Lights
+    hide_entity: True
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.garage_door_tilt_sensor_sensor_27_0
+        from: 'on'
+        to: 'off'
+        for:
+          hours: 0
+          minutes: 10
+          seconds: 0
+    condition:
+      - condition: state
+        entity_id: input_boolean.options_lights_auto_off
+        state: 'on'
+
+    action:
+      - service: light.turn_off
+        entity_id: light.driveway_lights_level_4_0, light.mudroom_entrance_lights_level_35_0
+
+  # Turn on lights when Garage Opens
+  - alias: AUTO ON (GARAGE OPEN) Driveway and Mudroom Entrance Lights
+    hide_entity: True
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.garage_door_tilt_sensor_sensor_27_0
+        from: 'off'
+        to: 'on'
+
+    condition:
+      - condition: state
+        entity_id: input_boolean.options_lights_auto_on
+        state: 'on'
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+
+    action:
+      - service: light.turn_on
+        entity_id: light.driveway_lights_level_4_0, light.mudroom_entrance_lights_level_35_0
+
+  # NOTIFICATIONS
+  #----------------------------------------------------------------
+
+  # - alias: NOTIFY (OPEN) Garage Door
+  #   hide_entity: True
+  #   trigger:
+  #     - platform: state
+  #       entity_id: binary_sensor.garage_door_tilt_sensor_sensor_27_0
+  #       from: 'off'
+  #       to: 'on'
+  #   condition:
+  #     - condition: state
+  #       entity_id: input_boolean.options_notifications_push
+  #       state: 'on'
+  #
+  #   action:
+  #       service: notify.pushetta_carinajesse
+  #       data:
+  #         message: "Garage Door Opened"
+  #         title: ""
+  #
+  # - alias: NOTIFY (CLOSE) Garage Door
+  #   hide_entity: True
+  #   trigger:
+  #     - platform: state
+  #       entity_id: binary_sensor.garage_door_tilt_sensor_sensor_27_0
+  #       from: 'on'
+  #       to: 'off'
+  #   condition:
+  #     - condition: state
+  #       entity_id: input_boolean.options_notifications_push
+  #       state: 'on'
+  #
+  #   action:
+  #       service: notify.pushetta_carinajesse
+  #       data:
+  #         message: "Garage Door Closed"
+  #         title: ""
+
+  # Close Garage Door after 30 Mins
+  - alias: NOTIFY (OPEN 30 MIN) Garage Door
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.garage_door_tilt_sensor_sensor_27_0
+        from: 'off'
+        to: 'on'
+        for:
+          hours: 0
+          minutes: 30
+          seconds: 0
+    condition:
+      - condition: state
+        entity_id: input_boolean.options_notifications_push
+        state: 'on'
+
+    action:
+    - service: notify.pushetta_carinajesse
+      data:
+        message: "Garage Door Open For 30 Min!"
+        title: ""

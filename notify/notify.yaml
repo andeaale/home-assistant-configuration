@@ -1,0 +1,16 @@
+- platform: pushetta
+  name: pushetta_carinajesse
+  api_key: !secret pushetta_api_key
+  #channel_name: Jesse
+  channel_name: Carina and Jesse
+
+- platform: pushetta
+  name: pushetta_jesse
+  api_key: !secret pushetta_api_key
+  channel_name: Jesse
+
+- platform: pushetta
+  name: pushetta_carina
+  api_key: !secret pushetta_api_key
+  #channel_name: Jesse
+  channel_name: Carina

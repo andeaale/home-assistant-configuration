@@ -1,0 +1,81 @@
+# THEATER REMOTE PACKAGE
+# Automations with my theater Harmony remote
+#----------------------------------------------------------------
+
+remote:
+#----------------------------------------------------------------
+  - platform: harmony
+    name: HarmonyHub-Theater
+    host:  !secret remote_harmony_theater_host
+    scan_interval: 1
+
+automation:
+#----------------------------------------------------------------
+
+  # Turn on theater lights when "Lights On" activity is started
+  - alias: AUTO ON (LIGHTS ON) Theater Lights
+    trigger:
+      platform: state
+      entity_id: remote.harmonyhubtheater
+    condition:
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.current_activity == "Lights On" }}'
+    action:
+      - service: scene.turn_on
+        entity_id: scene.theater_see
+
+  # Turn off theater lights when "Lights Off" activity started
+  - alias: AUTO OFF (LIGHTS OFF) Theater Lights
+    trigger:
+      platform: state
+      entity_id: remote.harmonyhubtheater
+    condition:
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.current_activity == "Lights Off" }}'
+    action:
+      - service: scene.turn_on
+        entity_id: scene.theater_off
+
+  # Turn off theater lights when starting any activity to watch (ex TV) or play something (ex. Xbox)
+  - alias: AUTO OFF (WATCH PLAY) Theater Lights
+    trigger:
+      platform: state
+      entity_id: remote.harmonyhubtheater
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.settings_lights_auto_off
+          state: 'on'
+        - condition: or
+          conditions:
+          - condition: template
+            value_template: '{{ trigger.to_state.attributes.current_activity == "Watch TV" }}'
+          - condition: template
+            value_template: '{{ trigger.to_state.attributes.current_activity == "NVidia Shield" }}'
+          - condition: template
+            value_template: '{{ trigger.to_state.attributes.current_activity == "PS4" }}'
+          - condition: template
+            value_template: '{{ trigger.to_state.attributes.current_activity == "Play Xbox One" }}'
+          - condition: template
+            value_template: '{{ trigger.to_state.attributes.current_activity == "Watch Apple TV" }}'
+    action:
+      - service: scene.turn_on
+        entity_id: scene.theater_off
+
+  # Turn on theater lights when powering everything off
+  - alias: AUTO ON (ALL OFF) Theater Lights
+    trigger:
+      platform: state
+      entity_id: remote.harmonyhubtheater
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.settings_lights_auto_on
+          state: 'on'
+        - condition: template
+          value_template: '{{ trigger.to_state.attributes.current_activity == "PowerOff" }}'
+    action:
+      - service: scene.turn_on
+        entity_id: scene.theater_read

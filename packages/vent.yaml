@@ -1,0 +1,9 @@
+# VENT PACKAGE
+#----------------------------------------------------------------
+
+homeassistant:
+  customize:
+    switch.downstairs_bathroom_fan_switch_34_0:
+      icon: mdi:fan
+      entity_picture:
+      friendly_name: Downstairs Bathroom Fan

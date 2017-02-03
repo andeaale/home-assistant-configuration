@@ -1,0 +1,30 @@
+# Use customizations to hide entries and exclude from logbook
+
+include:
+  domains:
+    - homeassistant
+    - updater
+    - sun
+    - media_player
+    - alarm_control_panel
+    - switch
+    - light
+    - sensor
+
+exclude:
+  domains:
+    - remote
+    - device_tracker
+    - automation
+  entities:
+  - switch.garage_door_opener
+  - sensor.lights_on
+  - sensor.doors
+  - sensor.motion
+  - sensor.motion_indoor_camera_living_room
+  - sensor.motion_indoor_camera_playroom
+  - sensor.motion_indoor_camera_garage
+  - sensor.motion_indoor_camera_theater
+  - sensor.motion_indoor_camera_sunroom
+  - sensor.motion_indoor_camera_isabellas_room
+  - sensor.motion_indoor_camera_kitchen

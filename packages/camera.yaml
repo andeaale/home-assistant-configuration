@@ -1,0 +1,95 @@
+# CAMERA PACKAGE
+# IP connected cameras
+#----------------------------------------------------------------
+
+homeassistant:
+  customize:
+  #----------------------------------------------------------------
+    sensor.motion_indoor_camera_living_room:
+      icon: mdi:camcorder
+      friendly_name: Living Room
+
+    sensor.motion_indoor_camera_playroom:
+      icon: mdi:camcorder
+      friendly_name: Playroom
+
+    sensor.motion_indoor_camera_garage:
+      icon: mdi:camcorder
+      friendly_name: Garage
+
+    sensor.motion_indoor_camera_theater:
+      icon: mdi:camcorder
+      friendly_name: Theater
+
+    sensor.motion_indoor_camera_isabellas_room:
+      icon: mdi:camcorder
+      friendly_name: Isabellas Room
+
+    sensor.motion_indoor_camera_kitchen:
+      icon: mdi:camcorder
+      friendly_name: Kitchen
+
+    sensor.motion_indoor_camera_sunroom:
+      icon: mdi:camcorder
+      friendly_name: Sunroom
+
+group:
+#----------------------------------------------------------------
+
+  cameras_all:
+    - camera.garage
+    - camera.living_room
+    - camera.playroom
+    - camera.kitchen
+    - camera.sunroom
+    - camera.isabellas_room
+    - camera.theater
+
+  cameras_group1:
+    - camera.garage
+    - camera.living_room
+    - camera.playroom
+
+  cameras_group2:
+    - camera.kitchen
+    - camera.sunroom
+    - camera.isabellas_room
+    - camera.theater
+
+camera:
+#----------------------------------------------------------------
+
+  # Blue Iris registered cameras
+  # mjpg to Blue Iris to enable live feed on popup preview (click on camera image)
+  # turn off blue iris local lan authentication for this to work
+  #
+  # url format = http://blue_iris_ip:blue_iris_port/mjpg/blue_iris_camera_name
+  #  ex. http://192.168.1.5:81/mjpg/playroom
+  #----------------------------------------------------------------
+  - platform: mjpeg
+    name: Playroom
+    mjpeg_url: !secret camera_playroom_url
+
+  - platform: mjpeg
+    name: Sunroom
+    mjpeg_url: !secret camera_sunroom_url
+
+  - platform: mjpeg
+    name: Kitchen
+    mjpeg_url: !secret camera_kitchen_url
+
+  - platform: mjpeg
+    name: Garage
+    mjpeg_url: !secret camera_garage_url
+
+  - platform: mjpeg
+    name: Isabella's Room
+    mjpeg_url: !secret camera_isabellasroom_url
+
+  - platform: mjpeg
+    name: Living Room
+    mjpeg_url: !secret camera_livingroom_url
+
+  - platform: mjpeg
+    name: Theater
+    mjpeg_url: !secret camera_theater_url

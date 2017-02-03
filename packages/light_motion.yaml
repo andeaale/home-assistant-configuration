@@ -1,0 +1,91 @@
+# MOTION
+# Automations with motion sensors
+#----------------------------------------------------------------
+
+automation:
+#----------------------------------------------------------------
+
+  # Turns light on when motion detected - keeps light on while motion detected
+  # within 90 seconds
+  - alias: AUTO (Motion) Mudroom Light
+    trigger:
+      - platform: state
+        entity_id: sensor.motion_indoor_camera_playroom
+        to: 'On'
+      - platform: state
+        entity_id: sensor.motion_indoor_camera_playroom
+        to: 'Off'
+        for:
+          minutes: 1
+          seconds: 30
+    action:
+      service_template: >
+        {% if trigger.to_state.state == "On" %}
+          homeassistant.turn_on
+        {% elif trigger.to_state.state == "Off" %}
+          homeassistant.turn_off
+        {% endif %}
+      entity_id: light.mudroom_entrance_lights_level_35_0
+
+  # Turn on light when motion detected
+  # Brightness varies based on time of day (i.e. low when late at night)
+  - alias: AUTO ON (MOTION) Downstairs Bathroom Light
+    trigger:
+      platform: state
+      entity_id: sensor.aeotec_zw100_multisensor_6_burglar_24_10
+      from: '0'
+      to: '8'
+    action:
+      service: scene.turn_on
+      data_template:
+        entity_id: >
+          {% set hour=states("sensor.time").split(':')[0] | int %}
+          {%- if hour >= 19 or hour < 6  -%}
+            scene.downstairs_bathroom_relax
+          {%- elif hour >= 6 or hour <9  -%}
+            scene.downstairs_bathroom_read
+          {%- else -%}
+            scene.downstairs_bathroom_see
+          {%- endif %}
+
+  # - alias: AUTO ON (MOTION MORNING) Downstairs Bathroom Light
+  #   trigger:
+  #     platform: state
+  #     entity_id: sensor.aeotec_zw100_multisensor_6_burglar_24_10
+  #     from: '0'
+  #     to: '8'
+  #   condition:
+  #     - condition: time
+  #       after: '06:00:00'
+  #       before: '08:00:00'
+  #   action:
+  #     - service: scene.turn_on
+  #       entity_id: scene.downstairs_bathroom_read
+  #
+  # - alias: AUTO ON (MOTION NIGHT) Downstairs Bathroom Light
+  #   trigger:
+  #     platform: state
+  #     entity_id: sensor.aeotec_zw100_multisensor_6_burglar_24_10
+  #     from: '0'
+  #     to: '8'
+  #   condition:
+  #     - condition: time
+  #       after: '08:00:00'
+  #       before: '23:00:00'
+  #   action:
+  #     - service: scene.turn_on
+  #       entity_id: scene.downstairs_bathroom_see
+  #
+  # - alias: AUTO ON (MOTION LATE NIGHT) Downstairs Bathroom Light
+  #   trigger:
+  #     platform: state
+  #     entity_id: sensor.aeotec_zw100_multisensor_6_burglar_24_10
+  #     from: '0'
+  #     to: '8'
+  #   condition:
+  #     - condition: time
+  #       after: '23:00:00'
+  #       before: '06:00:00'
+  #   action:
+  #     - service: scene.turn_on
+  #       entity_id: scene.downstairs_bathroom_relax

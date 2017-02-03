@@ -1,0 +1,27 @@
+# CLIMATE COOLING PACKAGE
+# Fans, Air Conditioners, etc
+#----------------------------------------------------------------
+
+homeassistant:
+  customize:
+  #----------------------------------------------------------------
+
+    light.living_room_fan_level_10_0:
+      icon: mdi:fan
+      entity_picture:
+      friendly_name: Living Room Fan
+
+    light.master_entrance_fan_level_13_0:
+      icon: mdi:fan
+      entity_picture:
+      friendly_name: Master Entrance Fan
+
+    light.master_bedroom_fan_level_15_0:
+      icon: mdi:hotel
+      entity_picture:
+      friendly_name: Master Bedroom Fan
+
+    switch.master_ac_switch_17_0:
+      icon: mdi:air-conditioner
+      entity_picture:
+      friendly_name: Master AC

@@ -1,0 +1,57 @@
+# AUDIO PLAYER PACKAGE
+#----------------------------------------------------------------
+
+group:
+#----------------------------------------------------------------
+  speakers_group1:
+    - media_player.Living_Room
+    - media_player.Dining_Room
+    - media_player.Kitchen_Sink
+    - media_player.Kitchen_Table
+
+  speakers_group2:
+    - media_player.Hallway
+    - media_player.Master_Bedroom
+    - media_player.Master_Bathroom
+    - media_player.Bathroom_Girls
+    - media_player.Bathroom_Ryan
+
+media_player:
+#----------------------------------------------------------------
+
+  # Chromecast Audio
+  - platform: cast
+    name: Dinning Room
+    host: !secret cast_dining_room_host
+
+  - platform: cast
+    name: Bathroom (Girls)
+    host: !secret cast_bathroom_girls_host
+
+  - platform: cast
+    name: Hallway
+    host: !secret cast_hallway_host
+
+  - platform: cast
+    name: Kitchen (Table)
+    host: !secret cast_kitchen_table_host
+
+  - platform: cast
+    name: Kitchen (Sink)
+    host: !secret cast_kitchen_sink_host
+
+  - platform: cast
+    name: Living Room
+    host: !secret cast_living_room_host
+
+  - platform: cast
+    name: Master Bathroom
+    host: !secret cast_master_bathroom_host
+
+  - platform: cast
+    name: Master Bedroom
+    host: !secret cast_master_bedroom_host
+
+  - platform: cast
+    name: Bathroom (Ryan)
+    host: !secret cast_bathroom_ryan_host

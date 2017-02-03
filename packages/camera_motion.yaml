@@ -1,0 +1,180 @@
+# CAMERA MOTION PACKAGE
+# Leverage cameras as motion sensors to trigger notifications, automations, etc
+#----------------------------------------------------------------
+
+group:
+#----------------------------------------------------------------
+  motion_indoor_camera_all:
+    name: Motion Indoor (Camera)
+    view: no
+    icon: mdi:camcorder
+    entities:
+    - sensor.motion_indoor_camera_living_room
+    - sensor.motion_indoor_camera_playroom
+    - sensor.motion_indoor_camera_garage
+    - sensor.motion_indoor_camera_theater
+    - sensor.motion_indoor_camera_isabellas_room
+    - sensor.motion_indoor_camera_kitchen
+    - sensor.motion_indoor_camera_sunroom
+
+sensor:
+#----------------------------------------------------------------
+
+  # MOTION SENSORS
+  # Blue Iris performs rest calls when motion is detected and when it stops
+  # This dynamically creates the binary_sensors - so no motion detected means
+  # no binary sensor and no state to display or use in an automation.  The
+  # sensors below compensate for this.
+  #----------------------------------------------------------------
+  - platform: template
+    sensors:
+      motion_indoor_camera_living_room:
+        friendly_name: 'Living Room'
+        value_template: >-
+          {% if states.binary_sensor.blueiris_living_room.state %}
+            {% if is_state('binary_sensor.blueiris_living_room', 'on') %}
+              On
+            {% elif is_state('binary_sensor.blueiris_living_room', 'off') %}
+              Off
+            {% else %}
+              {{ states('binary_sensor.blueiris_living_room') }}
+            {% endif %}
+          {% else %}
+            Off
+          {% endif %}
+
+  - platform: template
+    sensors:
+      motion_indoor_camera_playroom:
+        friendly_name: 'Playroom'
+        value_template: >-
+          {% if states.binary_sensor.blueiris_playroom.state %}
+            {% if is_state('binary_sensor.blueiris_playroom', 'on') %}
+              On
+            {% elif is_state('binary_sensor.blueiris_playroom', 'off') %}
+              Off
+            {% else %}
+              {{ states('binary_sensor.blueiris_playroom') }}
+            {% endif %}
+          {% else %}
+            Off
+          {% endif %}
+
+  - platform: template
+    sensors:
+      motion_indoor_camera_garage:
+        friendly_name: 'Garage'
+        value_template: >-
+          {% if states.binary_sensor.blueiris_garage.state %}
+            {% if is_state('binary_sensor.blueiris_garage', 'on') %}
+              On
+            {% elif is_state('binary_sensor.blueiris_garage', 'off') %}
+              Off
+            {% else %}
+              {{ states('binary_sensor.blueiris_garage') }}
+            {% endif %}
+          {% else %}
+            Off
+          {% endif %}
+
+  - platform: template
+    sensors:
+      motion_indoor_camera_theater:
+        friendly_name: 'Theater'
+        value_template: >-
+          {% if states.binary_sensor.blueiris_theater.state %}
+            {% if is_state('binary_sensor.blueiris_theater', 'on') %}
+              On
+            {% elif is_state('binary_sensor.blueiris_theater', 'off') %}
+              Off
+            {% else %}
+              {{ states('binary_sensor.blueiris_theater') }}
+            {% endif %}
+          {% else %}
+            Off
+          {% endif %}
+
+  - platform: template
+    sensors:
+      motion_indoor_camera_sunroom:
+        friendly_name: 'Sunroom'
+        value_template: >-
+          {% if states.binary_sensor.blueiris_sunroom.state %}
+            {% if is_state('binary_sensor.blueiris_sunroom', 'on') %}
+              On
+            {% elif is_state('binary_sensor.blueiris_sunroom', 'off') %}
+              Off
+            {% else %}
+              {{ states('binary_sensor.blueiris_sunroom') }}
+            {% endif %}
+          {% else %}
+            Off
+          {% endif %}
+
+  - platform: template
+    sensors:
+      motion_indoor_camera_isabellas_room:
+        friendly_name: 'Isabellas Room'
+        value_template: >-
+          {% if states.binary_sensor.blueiris_isabellas_room.state %}
+            {% if is_state('binary_sensor.blueiris_isabellas_room', 'on') %}
+              On
+            {% elif is_state('binary_sensor.blueiris_isabellas_room', 'off') %}
+              Off
+            {% else %}
+              {{ states('binary_sensor.blueiris_isabellas_room') }}
+            {% endif %}
+          {% else %}
+            Off
+          {% endif %}
+
+  - platform: template
+    sensors:
+      motion_indoor_camera_kitchen:
+        friendly_name: 'Kitchen'
+        value_template: >-
+          {% if states.binary_sensor.blueiris_kitchen.state %}
+            {% if is_state('binary_sensor.blueiris_kitchen', 'on') %}
+              On
+            {% elif is_state('binary_sensor.blueiris_kitchen', 'off') %}
+              Off
+            {% else %}
+              {{ states('binary_sensor.blueiris_kitchen') }}
+            {% endif %}
+          {% else %}
+            Off
+          {% endif %}
+
+  # SUMMARY
+  #----------------------------------------------------------------
+  - platform: template
+    sensors:
+      motion:
+        friendly_name: Motion
+        unit_of_measurement: 'On'
+        value_template: >
+          {% set total = 0 %}
+
+          {% if is_state('binary_sensor.blueiris_kitchen', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+          {% if is_state('binary_sensor.blueiris_garage', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+          {% if is_state('binary_sensor.blueiris_playroom', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+          {% if is_state('binary_sensor.blueiris_sunroom', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+          {% if is_state('binary_sensor.blueiris_living_room', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+          {% if is_state('binary_sensor.blueiris_theater', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+          {% if is_state('binary_sensor.blueiris_bedroom', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+
+          {{total}}

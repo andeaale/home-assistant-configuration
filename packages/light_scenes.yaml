@@ -1,0 +1,285 @@
+# LIGHTING SCENES PACKAGE
+#----------------------------------------------------------------
+
+scene:
+#----------------------------------------------------------------
+
+  # THEATER
+  #----------------------------------------------------------------
+
+  - name: Theater Off
+    icon: mdi:lightbulb
+    entities:
+      switch.theater_posters_switch_22_0:
+        state: off
+      switch.theater_candy_lights_switch_25_0:
+        state: off
+      light.theater_lights_level_23_0:
+        state: off
+
+  - name: Theater See
+    icon: mdi:lightbulb-on-outline
+    entities:
+      switch.theater_posters_switch_22_0:
+        state: on
+      light.theater_lights_level_23_0:
+        state: on
+        brightness: 255
+
+  - name: Theater Read
+    icon: mdi:lightbulb-on-outline
+    entities:
+      switch.theater_posters_switch_22_0:
+        state: on
+      switch.theater_candy_lights_switch_25_0:
+        state: on
+      light.theater_lights_level_23_0:
+        state: off
+
+  - name: Theater Relax
+    icon: mdi:lightbulb-on-outline
+    entities:
+      switch.theater_posters_switch_22_0:
+        state: off
+      switch.theater_candy_lights_switch_25_0:
+        state: on
+      light.theater_lights_level_23_0:
+        state: on
+        brightness: 5
+
+  - name: Theater Sleep
+    icon: mdi:hotel
+    entities:
+      switch.theater_posters_switch_22_0:
+        state: off
+      switch.theater_candy_lights_switch_25_0:
+        state: on
+      light.theater_lights_level_23_0:
+        state: off
+
+  # LIVING ROOM
+  #----------------------------------------------------------------
+
+  - name: Living Room Off
+    icon: mdi:lightbulb
+    entities:
+      light.living_room_lights_level_9_0:
+        state: off
+      light.living_room_fan_level_10_0:
+        state: off
+
+  - name: Living Room See
+    icon: mdi:lightbulb-on-outline
+    entities:
+      light.living_room_lights_level_9_0:
+        state: on
+        brightness: 255
+
+  - name: Living Room Read
+    icon: mdi:lightbulb-on-outline
+    entities:
+      light.living_room_lights_level_9_0:
+        state: on
+        brightness: 125
+
+  - name: Living Room Relax
+    icon: mdi:lightbulb-on
+    entities:
+      light.living_room_lights_level_9_0:
+        state: on
+        brightness: 5
+
+  - name: Living Room Sleep
+    icon: mdi:hotel
+    entities:
+      light.living_room_lights_level_9_0:
+        state: off
+      light.dinning_room_lights_level_6_0:
+        state: off
+      light.stair_lights_level_7_0:
+        state: off
+      light.laundry_lights_level_11_0:
+        state: off
+      light.sunroom_treadmill_lights_level_18_0:
+        state: off
+      light.isabellas_room_light_level_29_0:
+        state: off
+      light.upstairs_hallway_lights_level_30_0:
+        state: off
+      light.living_room_fan_level_10_0:
+        state: on
+        brightness: 120
+
+  - name: Living Room Cool
+    icon: mdi:lightbulb-outline
+    entities:
+      light.living_room_fan_level_10_0:
+        state: on
+        brightness: 160
+
+  - name: Living Room Fanless
+    icon: mdi:lightbulb-outline
+    entities:
+      light.living_room_fan_level_10_0:
+        state: off
+
+  # Downstairs Bathroom
+  #----------------------------------------------------------------
+
+  - name: Downstairs Bathroom Off
+    icon: mdi:lightbulb
+    entities:
+      light.downstairs_bathroom_lights_level_36_0:
+        state: off
+
+  - name: Downstairs Bathroom See
+    icon: mdi:lightbulb-on-outline
+    entities:
+      light.downstairs_bathroom_lights_level_36_0:
+        state: on
+        brightness: 255
+
+  - name: Downstairs Bathroom Read
+    icon: mdi:lightbulb-on-outline
+    entities:
+      light.downstairs_bathroom_lights_level_36_0:
+        state: on
+        brightness: 120
+
+  - name: Downstairs Bathroom Relax
+    icon: mdi:lightbulb-on
+    entities:
+      light.downstairs_bathroom_lights_level_36_0:
+        state: on
+        brightness: 70
+
+  # Mudroom Bathroom
+  #----------------------------------------------------------------
+
+  - name: Mudroom Off
+    icon: mdi:lightbulb
+    entities:
+      light.mudroom_hallway_lights_level_31_0:
+        state: off
+      light.mudroom_entrance_lights_level_35_0:
+        state: off
+
+  - name: Mudroom See
+    icon: mdi:lightbulb-on-outline
+    entities:
+      light.mudroom_hallway_lights_level_31_0:
+        state: on
+        brightness: 255
+      light.mudroom_entrance_lights_level_35_0:
+        state: on
+        brightness: 255
+
+  - name: Mudroom Read
+    icon: mdi:lightbulb-on-outline
+    entities:
+      light.mudroom_hallway_lights_level_31_0:
+        state: on
+        brightness: 125
+      light.mudroom_entrance_lights_level_35_0:
+        state: on
+        brightness: 125
+
+  - name: Mudroom Relax
+    icon: mdi:lightbulb-on
+    entities:
+      light.mudroom_hallway_lights_level_31_0:
+        state: on
+        brightness: 5
+      light.mudroom_entrance_lights_level_35_0:
+        state: on
+        brightness: 5
+
+  - name: School Morning On
+    icon: mdi:lightbulb
+    entities:
+      light.front_door_lights_level_5_0:
+        state: on
+      light.stair_lights_level_7_0:
+        state: on
+      light.mudroom_entrance_lights_level_35_0:
+        state: on
+
+  - name: School Morning Off
+    icon: mdi:lightbulb
+    entities:
+      light.front_door_lights_level_5_0:
+        state: off
+      light.stair_lights_level_7_0:
+        state: off
+      light.mudroom_entrance_lights_level_35_0:
+        state: off
+
+input_select:
+#----------------------------------------------------------------
+
+  living_room_scenes:
+    name: "Living Room"
+    icon: mdi:sofa
+    options:
+      - 'Off'
+      - See
+      - Read
+      - Relax
+      - Sleep
+      - Cool
+      - 'Fan Off'
+    initial: 'Off'
+
+  theater_scenes:
+    name: "Theater"
+    icon: mdi:theater
+    options:
+      - 'Off'
+      - See
+      - Read
+      - Relax
+      - Sleep
+    initial: 'Off'
+
+group:
+#----------------------------------------------------------------
+
+  quick_select_scene:
+    name: Quick Select
+    view: no
+    icon: mdi:animation
+    entities:
+    - input_select.living_room_scenes
+    - input_select.theater_scenes
+
+  living_room_scene:
+    name: Living Room
+    view: no
+    icon: mdi:lightbulb
+    entities:
+    - scene.living_room_off
+    - scene.living_room_see
+    - scene.living_room_read
+    - scene.living_room_relax
+    - scene.living_room_sleep
+    - scene.living_room_cool
+    - scene.living_room_fan_off
+
+  theater_scene:
+    name: Theater
+    view: no
+    icon: mdi:lightbulb
+    entities:
+    - scene.theater_off
+    - scene.theater_see
+    - scene.theater_read
+    - scene.theater_relax
+    - scene.theater_sleep
+
+  specfiic_scene:
+    name: Specific
+    view: no
+    icon: mdi:lightbulb
+    entities:
+    - scene.school_morning_on
+    - scene.school_morning_off

@@ -1,0 +1,98 @@
+# ALARM PACKAGE
+# Items related home security
+#----------------------------------------------------------------
+
+# states:
+# armed_home
+# pending
+# armed_away
+# disarmed
+
+alarm_control_panel:
+#----------------------------------------------------------------
+  - platform: manual
+    name: Alarm
+    pending_time: 5
+
+automation:
+#----------------------------------------------------------------
+
+  - alias: "NOTIFY (DISARMED) Alarm"
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.alarm
+        to: 'disarmed'
+    condition:
+      - condition: state
+        entity_id: input_boolean.settings_notifications_push
+        state: 'on'
+    action:
+      - service: notify.pushetta_carinajesse
+        data_template:
+          message: "Disarmed"
+          title: "Alarm"
+
+  - alias: "NOTIFY (ARMED HOME) Alarm"
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.alarm
+        to: 'armed_home'
+    condition:
+      - condition: state
+        entity_id: input_boolean.settings_notifications_push
+        state: 'on'
+    action:
+      - service: notify.pushetta_carinajesse
+        data_template:
+          message: "Armed (Home)"
+          title: "Alarm"
+
+  - alias: "NOTIFY (ARMED AWAY) Alarm"
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.alarm
+        to: 'armed_away'
+    condition:
+      - condition: state
+        entity_id: input_boolean.settings_notifications_push
+        state: 'on'
+    action:
+      - service: notify.pushetta_carinajesse
+        data_template:
+          message: "Armed (Away)"
+          title: "Alarm"
+
+  # Logs detected indoor camera motion when the alarm is "armed_away"
+  # This is necessary to avoid the sensors from filling the log with ons and offs
+  # This only logs "ons" (i.e. motion detected) with a clearer message
+  - alias: 'LOG (MOTION) Indoor Camera'
+    trigger:
+      - platform: state
+        entity_id:
+          - sensor.motion_indoor_camera_living_room
+          - sensor.motion_indoor_camera_playroom
+          - sensor.motion_indoor_camera_garage
+          - sensor.motion_indoor_camera_theater
+          - sensor.motion_indoor_camera_sunroom
+          - sensor.motion_indoor_camera_isabellas_room
+          - sensor.motion_indoor_camera_kitchen
+        to: 'On'
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.alarm
+          state: 'armed_away'
+    action:
+      - service: alarm_control_panel.alarm_trigger
+        entity_id: alarm_control_panel.alarm
+      - service: logbook.log
+        data_template:
+          name: >-
+            ALARM TRIGGERED - {{ trigger.to_state.attributes.friendly_name }}
+          message: "Motion Detected"
+      - service: notify.pushetta_carinajesse
+        data_template:
+          message: >-
+            {{ trigger.to_state.attributes.friendly_name }} Motion Detected
+          title: "ALARM TRIGGERED -"

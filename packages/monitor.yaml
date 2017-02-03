@@ -1,0 +1,303 @@
+# MONITOR PACKAGE
+# Monitor devices, services, etc
+#----------------------------------------------------------------
+
+homeassistant:
+  customize:
+  #----------------------------------------------------------------
+
+    binary_sensor.workhorse:
+      icon: mdi:desktop-tower
+      friendly_name: ASUS
+
+    binary_sensor.streamer:
+      icon: mdi:desktop-tower
+      friendly_name: Inspiron
+
+    binary_sensor.nas_secondary:
+      icon: mdi:server
+      friendly_name: D5
+
+    binary_sensor.nas_primary:
+      icon: mdi:server
+      friendly_name: D8
+
+    binary_sensor.wifi_theater:
+      icon: mdi:wifi
+      friendly_name: WIFI Theater
+
+    binary_sensor.wifi_living_room:
+      icon: mdi:wifi
+      friendly_name: WIFI Living Room
+
+    binary_sensor.wifi_master_bedroom:
+      icon: mdi:wifi
+      friendly_name: WIFI Master Bedroom
+
+    binary_sensor.wifi_office:
+      icon: mdi:wifi
+      friendly_name: WIFI Office
+
+    binary_sensor.blog:
+      icon: mdi:web
+      friendly_name: Blog
+
+    binary_sensor.router:
+      icon: mdi:ethernet
+      friendly_name: Router
+
+    binary_sensor.plex:
+      icon: mdi:ticket
+      friendly_name: Plex
+
+    binary_sensor.camera_garage:
+      icon: mdi:camcorder
+      friendly_name: Camera Garage
+
+    binary_sensor.camera_isabella:
+      icon: mdi:camcorder
+      friendly_name: Camera Isabella
+
+    binary_sensor.camera_kitchen:
+      icon: mdi:camcorder
+      friendly_name: Camera Kitchen
+
+    binary_sensor.camera_living_room:
+      icon: mdi:camcorder
+      friendly_name: Camera Living Room
+
+    binary_sensor.camera_theater:
+      icon: mdi:camcorder
+      friendly_name: Camera Theater
+
+    binary_sensor.camera_playroom:
+      icon: mdi:camcorder
+      friendly_name: Camera Playroom
+
+    binary_sensor.camera_sunroom:
+      icon: mdi:camcorder
+      friendly_name: Camera Sunroom
+
+automation:
+#----------------------------------------------------------------
+
+  # Notify when sensor batteries are low
+  - alias: NOTIFY (BATTERY) Sensors
+    trigger:
+      - platform: numeric_state
+        entity_id: binary_sensor.front_door_sensor_sensor_42_0
+        value_template: '{{ state.attributes.battery_level }}'
+        below: 5
+      - platform: numeric_state
+        entity_id: binary_sensor.mudroom_door_sensor_sensor_40_0
+        value_template: '{{ state.attributes.battery_level }}'
+        below: 5
+      - platform: numeric_state
+        entity_id: binary_sensor.garage_door_tilt_sensor_sensor_27_0
+        value_template: '{{ state.attributes.battery_level }}'
+        below: 5
+    action:
+      - service: notify.pushetta_jesse
+        data_template:
+          message: "{{ trigger.entity_id.split('.')[1].split('_sensor')[0].lower().replace('_', ' ').title() }} batteries are at {{ trigger.to_state.state }}"
+          title: ""
+
+  - alias: NOTIFY (STATE) Binary Sensors
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.blog
+          - binary_sensor.router
+          - binary_sensor.plex
+          - binary_sensor.camera_garage
+          - binary_sensor.camera_isabella
+          - binary_sensor.camera_kitchen
+          - binary_sensor.camera_living_room
+          - binary_sensor.camera_theater
+          - binary_sensor.camera_playroom
+          - binary_sensor.camera_sunroom
+          - binary_sensor.wifi_theater
+          - binary_sensor.wifi_office
+          - binary_sensor.wifi_living_room
+          - binary_sensor.wifi_master_bedroom
+          - binary_sensor.workhorse
+          - binary_sensor.streamer
+          - binary_sensor.nas_primary
+          - binary_sensor.nas_secondary
+    condition:
+      - condition: state
+        entity_id: input_boolean.settings_notifications_push
+        state: 'on'
+    action:
+      - service: notify.pushetta_jesse
+        data_template:
+          message: "{{ trigger.entity_id.split('.')[1].title().replace('_', ' ') }} is {{ trigger.to_state.state }}"
+          title: ""
+
+group:
+#----------------------------------------------------------------
+
+  monitor_systems:
+    name: Systems
+    view: no
+    icon: mdi:radar
+    entities:
+    - binary_sensor.blog
+    - binary_sensor.plex
+    - binary_sensor.workhorse
+    - binary_sensor.streamer
+    - binary_sensor.nas_primary
+    - binary_sensor.nas_secondary
+
+  monitor_cameras:
+    name: Cameras
+    view: no
+    icon: mdi:radar
+    entities:
+    - binary_sensor.camera_garage
+    - binary_sensor.camera_isabella
+    - binary_sensor.camera_kitchen
+    - binary_sensor.camera_living_room
+    - binary_sensor.camera_theater
+    - binary_sensor.camera_playroom
+    - binary_sensor.camera_sunroom
+
+  monitor_network:
+    name: Network
+    view: no
+    icon: mdi:radar
+    entities:
+    - binary_sensor.router
+    - binary_sensor.wifi_theater
+    - binary_sensor.wifi_office
+    - binary_sensor.wifi_living_room
+    - binary_sensor.wifi_master_bedroom
+
+binary_sensor:
+#----------------------------------------------------------------
+
+  - platform: command_line
+    name: Router
+    # Example: command: ping -W 1 -c 2 192.168.1.1 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    command: !secret monitor_router_command
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: Blog
+    # Example: command: curl -s --head http://www.example.com/ | head -n 1 | grep "HTTP/1.[01] [23].." > /dev/null && (echo "Online") || (echo "Offline")
+    command: !secret monitor_blog_command
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: Plex
+    command: !secret monitor_plex_command
+    # Example: command: curl -s --head http://192.168.1.2:32400/web/index.html | head -n 1 | grep "HTTP/1.[01] [23].." > /dev/null && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: NAS (Secondary)
+    command: !secret monitor_nas_secondary_command
+    # Example: command: ping -W 1 -c 2 192.168.1.3 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: NAS (Primary)
+    command: !secret monitor_nas_primary_command
+    # Example: command: ping -W 1 -c 2 192.168.1.4 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: Workhorse
+    command: !secret monitor_workhorse_command
+    # Example: command: ping -W 1 -c 2 192.168.1.5 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: Streamer
+    command: !secret monitor_streamer_command
+    # Example: command: ping -W 1 -c 2 192.168.1.6 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: WIFI Theater
+    command: !secret monitor_wifi_theater_command
+    # Example: command: ping -W 1 -c 2 192.168.1.7 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: WIFI Office
+    command: !secret monitor_wifi_office_command
+    # Example: command: ping -W 1 -c 2 192.168.1.8 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: WIFI Master Bedroom
+    command: !secret monitor_wifi_master_bedroom_command
+    # Example: command: ping -W 1 -c 2 192.168.1.9 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: WIFI Living Room
+    command: !secret monitor_wifi_living_room_command
+    # Example: command: ping -W 1 -c 2 192.168.1.10 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: Camera Garage
+    command: !secret monitor_camera_garage_command
+    # Example: command: ping -W 1 -c 2 192.168.1.11 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: Camera Isabella
+    command: !secret monitor_camera_isabellas_room_command
+    # Example: command: ping -W 1 -c 2 192.168.1.12 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: Camera Kitchen
+    command: !secret monitor_camera_kitchen_command
+    # Example: command: ping -W 1 -c 2 192.168.1.13 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: Camera Living Room
+    command: !secret monitor_camera_living_room_command
+    # Example: command: ping -W 1 -c 2 192.168.1.14 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: Camera Theater
+    command: !secret monitor_camera_theater_command
+    # Example: command: ping -W 1 -c 2 192.168.1.15 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: Camera Playroom
+    command: !secret monitor_camera_playroom_command
+    # Example: command: ping -W 1 -c 2 192.168.1.16 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"
+
+  - platform: command_line
+    name: Camera Sunroom
+    command: !secret monitor_camera_sunroom_command
+    # Example: command: ping -W 1 -c 2 192.168.1.17 > /dev/null 2>&1 && (echo "Online") || (echo "Offline")
+    payload_on: "Online"
+    payload_off: "Offline"

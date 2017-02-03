@@ -1,0 +1,102 @@
+# HA VIEWS PACKAGE
+#----------------------------------------------------------------
+
+group:
+#----------------------------------------------------------------
+  default_view:
+    name: Home
+    view: yes
+    icon: mdi:home # Uncomment line to show icon instead of name
+    entities:
+    - sensor.garage_door
+    - sensor.lights_on
+    - group.quick_clicks
+
+  quick_clicks:
+    name: Quick Clicks
+    view: no
+    icon: mdi:remote
+    entities:
+    - switch.garage_door_opener
+    - camera.garage
+
+  lights_view:
+    name: Lights
+    view: yes
+    icon: mdi:lightbulb
+    entities:
+      - group.lights_garage
+      - group.lights_outside
+      - group.lights_master_bedroom
+      - group.lights_upstairs
+      - group.lights_living_room
+      - group.lights_downstairs
+      - group.lights_downstairs_bathroom
+      - group.lights_mudroom
+      - group.lights_theater
+
+  # Note: Multiple camera groups to force web page to display in multiple columns
+  cameras_view:
+    name: Cameras
+    view: yes
+    icon: mdi:camcorder # Uncomment line to show icon instead of name
+    entities:
+      - group.cameras_group1
+      - group.cameras_group2
+
+  audio_view:
+    name: Audio
+    view: yes
+    icon: mdi:headphones
+    entities:
+      - group.speakers_group1
+      - group.speakers_group2
+
+  people_view:
+    name: People
+    view: yes
+    icon: mdi:account-multiple
+    entities:
+      - group.residents_all
+
+  alarm_view:
+    name: Alarm
+    view: yes
+    icon: mdi:security-home
+    entities:
+      - alarm_control_panel.alarm
+      - sensor.doors
+      - sensor.motion
+      - group.doors_all
+      - group.motion_indoor_camera_all
+
+  scenes_view:
+    name: Scenes
+    view: yes
+    icon: mdi:animation
+    entities:
+      - group.quick_select_scene
+      - group.living_room_scene
+      - group.theater_scene
+      - group.specfiic_scene
+
+  monitor_view:
+    name: Monitor
+    view: yes
+    icon: mdi:radar
+    entities:
+      - media_player.plex_server
+      - media_player.shield_android_tv
+      - sensor.plex
+      - script.backup
+      - group.monitor_systems
+      - group.monitor_network
+      - group.monitor_cameras
+
+  options_view:
+    name: Options
+    view: yes
+    icon: mdi:settings
+    entities:
+      - group.options_lights
+      - group.options_notifications

@@ -1,0 +1,10 @@
+# ubiquiti - wireless
+- platform: unifi
+  host: !secret device_tracker_wifi_ubiquiti_host
+  port: !secret device_tracker_wifi_ubiquiti_port
+  username: !secret device_tracker_wifi_ubiquiti_username
+  password: !secret device_tracker_wifi_ubiquiti_password
+  site_id: default
+  track_new_devices: no
+  interval_seconds: 2
+  consider_home: 180

@@ -1,0 +1,65 @@
+# HOMEASSISTANT
+#----------------------------------------------------------------
+
+# core configuration
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: !secret homeassistant_latitude
+  longitude: !secret homeassistant_longitude
+  # Impacts weather/sunrise data
+  elevation: !secret homeassistant_elevation
+  # 'metric' for Metric, 'imperial' for Imperial
+  unit_system: imperial
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: !secret homeassistant_time_zone
+  # Bundles configurations together
+  # https://home-assistant.io/topics/packages/
+  packages: !include_dir_named packages/
+
+# Enables the frontend
+frontend:
+
+sensor:
+  - platform: time_date
+    display_options:
+      - 'time'
+
+# Config options for web server (Authentication)
+http: !include_dir_merge_named http/
+
+# Checks for available updates
+updater:
+
+# Enables support for tracking state changes over time.
+# https://home-assistant.io/components/history/
+history:
+
+# View all events in a logbook
+# https://home-assistant.io/components/logbook/
+logbook: !include_dir_merge_named logbook/
+
+# Uses your current location to track if the sun is above or below the horizon
+# https://home-assistant.io/components/sun/
+sun:
+
+# Sends notifications to a wide variety of platforms
+# https://home-assistant.io/components/notify/
+notify: !include_dir_merge_list notify/
+
+# Gathers information from networking equipment  to track connected devices
+# https://home-assistant.io/components/device_tracker/
+device_tracker: !include_dir_merge_list device_tracker/
+
+# Named regions by latitude and longitude
+# https://home-assistant.io/components/zone/
+zone: !include_dir_merge_list zone/
+
+# Text-to-speech (TTS) enables Home Assistant to speak to you.
+# https://home-assistant.io/components/tts/
+tts:
+  - platform: google
+    cache: true
+    cache_dir: /tmp/tts
+    time_memory: 300

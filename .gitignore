@@ -1,0 +1,30 @@
+._*
+*.conf
+*.crt
+*.csr
+*.db
+*.db-journal
+*.key
+*.log
+*.pid
+*.sqlite
+*.txt
+*.xml
+*.xsd
+.DS_Store
+*.pyc
+
+# folders with sensitive data
+zone
+www
+icloud
+http
+
+lib
+deps
+
+# files with sensitive data
+secrets.yaml
+known_devices.yaml
+
+.uuid
