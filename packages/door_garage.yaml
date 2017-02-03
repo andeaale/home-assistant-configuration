@@ -122,45 +122,6 @@ automation:
       - service: light.turn_on
         entity_id: light.driveway_lights_level_4_0, light.mudroom_entrance_lights_level_35_0
 
-  # NOTIFICATIONS
-  #----------------------------------------------------------------
-
-  # - alias: NOTIFY (OPEN) Garage Door
-  #   hide_entity: True
-  #   trigger:
-  #     - platform: state
-  #       entity_id: binary_sensor.garage_door_tilt_sensor_sensor_27_0
-  #       from: 'off'
-  #       to: 'on'
-  #   condition:
-  #     - condition: state
-  #       entity_id: input_boolean.options_notifications_push
-  #       state: 'on'
-  #
-  #   action:
-  #       service: notify.pushetta_carinajesse
-  #       data:
-  #         message: "Garage Door Opened"
-  #         title: ""
-  #
-  # - alias: NOTIFY (CLOSE) Garage Door
-  #   hide_entity: True
-  #   trigger:
-  #     - platform: state
-  #       entity_id: binary_sensor.garage_door_tilt_sensor_sensor_27_0
-  #       from: 'on'
-  #       to: 'off'
-  #   condition:
-  #     - condition: state
-  #       entity_id: input_boolean.options_notifications_push
-  #       state: 'on'
-  #
-  #   action:
-  #       service: notify.pushetta_carinajesse
-  #       data:
-  #         message: "Garage Door Closed"
-  #         title: ""
-
   # Close Garage Door after 30 Mins
   - alias: NOTIFY (OPEN 30 MIN) Garage Door
     trigger:
