@@ -80,7 +80,7 @@ sensor:
             Home
           {% else %}
             {% if states.device_tracker.jessesiphone7plus.state %}
-              {{ states('device_tracker.jessesiphone7plus').lower().replace('not home', 'Away').title() }}
+              {{ states('device_tracker.jessesiphone7plus').lower().replace('_',' ').replace('not home', 'Away').title() }}
             {% else %}
               Away
             {% endif %}
@@ -95,7 +95,7 @@ sensor:
             Home
           {% else %}
             {% if states.device_tracker.carinasiphone7plus.state %}
-              {{ states('device_tracker.carinasiphone7plus').lower().replace('not home', 'Away').title() }}
+              {{ states('device_tracker.carinasiphone7plus').lower().replace('_',' ').replace('not home', 'Away').title() }}
             {% else %}
               Away
             {% endif %}
@@ -110,7 +110,7 @@ sensor:
             Home
           {% else %}
             {% if states.device_tracker.biancasiphone.state %}
-              {{ states('device_tracker.biancasiphone').lower().replace('not home', 'Away').title() }}
+              {{ states('device_tracker.biancasiphone').lower().replace('_',' ').replace('not home', 'Away').title() }}
             {% else %}
               Away
             {% endif %}
@@ -125,7 +125,7 @@ sensor:
             Home
           {% else %}
             {% if states.device_tracker.iphone4.state %}
-              {{ states('device_tracker.iphone4').lower().replace('not home', 'Away').title() }}
+              {{ states('device_tracker.iphone4').lower().replace('_',' ').replace('not home', 'Away').title() }}
             {% else %}
               Away
             {% endif %}
