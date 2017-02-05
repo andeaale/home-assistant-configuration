@@ -1,6 +1,20 @@
 # VIDEO PLAYER PACKAGE
 #----------------------------------------------------------------
 
+group:
+#----------------------------------------------------------------
+  video_group1:
+    - media_player.living_room_apple_tv
+    - media_player.shield_android_tv
+    - media_player.bedroom_apple_tv
+    - media_player.kitchen_apple_tv
+    - media_player.office_apple_tv
+        
+  video_group2:
+    - media_player.playroom_apple_tv
+    - media_player.isabellas_apple_tv
+    - media_player.ryans_apple_tv
+    - media_player.biancas_apple_tv
 sensor:
 #----------------------------------------------------------------
 
@@ -13,7 +27,6 @@ sensor:
     username: !secret plex_server_username
     password: !secret plex_server_password
 
-
 media_player:
 #----------------------------------------------------------------
 
@@ -22,3 +35,7 @@ media_player:
     ip_address: !secret plex_server_host
     port: !secret plex_server_port
     token: !secret plex_server_token
+
+  - platform: plexclients
+    host: !secret plex_server_host
+    port: !secret plex_server_port

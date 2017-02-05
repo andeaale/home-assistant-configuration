@@ -44,14 +44,6 @@ group:
       - group.cameras_group1
       - group.cameras_group2
 
-  audio_view:
-    name: Audio
-    view: yes
-    icon: mdi:headphones
-    entities:
-      - group.speakers_group1
-      - group.speakers_group2
-
   people_view:
     name: People
     view: yes
@@ -69,6 +61,22 @@ group:
       - sensor.motion
       - group.doors_all
       - group.motion_indoor_camera_all
+
+  audio_view:
+    name: Audio
+    view: yes
+    icon: mdi:headphones
+    entities:
+      - group.speakers_group1
+      - group.speakers_group2
+
+  video_view:
+    name: Video
+    view: yes
+    icon: mdi:movie
+    entities:
+      - group.video_group1
+      - group.video_group2
 
   scenes_view:
     name: Scenes
