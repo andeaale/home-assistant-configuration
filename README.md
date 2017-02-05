@@ -8,6 +8,7 @@ _**NOTE:** Sensitive files (ex. secrets.yaml) and folders (ex. www) have been ex
 - [Features & Benefits](#features-benefits)
 	- [Convenience](#-convenience)
 	- [Climate](#-climate)
+	- [Maintenance](#-maintenance)
 	- [Monitoring](#-monitoring)
 	- [Multimedia](#-multimedia)
 	- [People](#-people)
@@ -40,6 +41,9 @@ Some of the features and benefits of my entire home setup (automation, entertain
   * _**~~Alerting~~**_ | ~~Sends push notifications when temperature is too hot or too cold~~
 * **~~Humidity~~**
   * _**~~Automatic Venting~~**_ | ~~Automatically turn on bathroom fan when humidity is high (i.e. someone is showering)~~
+
+### ![Maintenance](docs/images/wrench.png) Maintenance
+* _**Z-Wave Healing**_ | Automatically heal your Z-Wave network while you sleep
 
 ### ![Monitoring](docs/images/heartbeat.png) Monitoring
 * _**Infrastructure Up/Down Alerts**_ | Monitor your critical infrastructure (ex. NAS, router, wifi, etc) and send push notifications when they go up or down

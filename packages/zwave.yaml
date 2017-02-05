@@ -64,15 +64,13 @@
 # Your USB path is now /dev/ttyUSB-ZStick-5G
 
 zwave:
+#----------------------------------------------------------------
+
   usb_path: /dev/ttyUSB-ZStick-5G
   polling_interval: 2000
   autoheal: true
   config_path: /srv/hass/src/python-openzwave/openzwave/config
   customize: # This attribute contains node-specific override values:
-    light.__level_3_0:
-      ignored: true
-    light.__level_14_0:
-      ignored: true
     switch.theater_candy_lights_switch_25_0:
       polling_intensity: 1 #Enables polling of a value and sets the frequency of polling (0=none, 1=every time through the list, 2=every other time, etc). If not specified then your device will not be polled.
     switch.master_ac_switch_17_0:
@@ -129,3 +127,14 @@ zwave:
       polling_intensity: 1
     switch.downstairs_bathroom_fan_switch_34_0:
       polling_intensity: 1
+
+automation:
+#----------------------------------------------------------------
+
+  - alias: HEAL (NIGHTLY) Z-Wave
+    hide_entity: True
+    trigger:
+      platform: time
+      after: '4:00:00'
+    action:
+      service: zwave.heal_network
