@@ -30,7 +30,7 @@ Some of the features and benefits of my entire home setup (automation, entertain
 * **Lighting**
   * _**Motion & Time Sensitive Lighting**_ | Turn on lights when motion detected at the appropriate brightness for the time of day (ex. After midnight, lighting automatically turns on to a maximum 40% brightness)
   * _**School Mornings**_ | Turn on front door, stairs, and mudroom entrance lights at the start of every school day
-* **~~Voice Contol~~** | ~~You know, like everyone else does~~
+* _**~~Voice Contol~~**_ | ~~You know, like everyone else does~~
 
 ### ![Climate](docs/images/thermometer.png) Climate
 * **Cooling**
@@ -52,6 +52,7 @@ Some of the features and benefits of my entire home setup (automation, entertain
 * **Video**
   * _**Room/Whole House Video**_ | Control video streaming in any room, view who is streaming what, and more
   * _**Game Time / Movie Night**_ | Sit back, use your TV remote to watch TV or play a game, and have the lights dim or turn off.  Have them turn on when you turn off the TV.
+  * _**Smart Motion Lighting**_ | Lights turn on and off whenever motion is detected - but not when you are playing a game or watching a movie.
 
 ### ![People](docs/images/users.png) People
 * _**~~Heading Home Alerts~~**_ | ~~Sends push notifications when you're on your way home and how long until you arrive~~
