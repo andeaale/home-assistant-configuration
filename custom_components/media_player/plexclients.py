@@ -26,6 +26,8 @@ media_player.plex keeps the player as 'playing' and adds a hidden player as
 'idle'.)
 - No configurator, plex.conf, or plex token required (this probably works for
 me because I've set Plex to NOT require authentication for my local LAN)
+- Use in automations (get alerted when any or specific players start, plays a
+specific movie, etc - ex.  inform you when the kids are streaming late at night)
 
 Disadvantages:
 - Crappy, hardly tested, non-supported code
