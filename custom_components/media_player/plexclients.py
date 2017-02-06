@@ -1,6 +1,9 @@
 """
 Plex Clients - Media players for every connected Plex Client
 
+I created a custom component called PlexClients out of necessity as the built-in
+Plex component didn't meet my needs.
+
 Here are the advantages and disadvantages of this component over the HA
 standard media_player.plex component
 
@@ -26,9 +29,21 @@ me because I've set Plex to NOT require authentication for my local LAN)
 
 Disadvantages:
 - Crappy, hardly tested, non-supported code
+- Probably more
 
 Here you can see a visual comparison between media_player.plex and this component:
 https://github.com/JesseWebDotCom/home-assistant-configuration/blob/master/docs/images/plex_plexclients_comparison.png
+
+Instructions:
+- Copy this file to your <ha folder>/custom_components/media_player/ folder
+- Reference the component and set the host and port appropriately. For example:
+
+    media_player:
+      - platform: plexclients
+        host: 192.168.1.10
+        port: 32400
+
+    # 'host' and 'port' are the ip address and port of your plex server
 
 To Do:
 - Clean up code
