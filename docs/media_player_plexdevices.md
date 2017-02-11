@@ -7,9 +7,7 @@ A plex streamer is any device that streams from your plex server.  A plex client
 media_player.plex is also missing a bunch of meta data, doesn't let you control things like volume, and more.  There's also a ton of additional features only available in this PlexDevices component.
 
 ### Side by Side Comparison
-media_player.plex  |  media_player.plexdevices
---|--
-![](images/media_player_plex.png)  |  ![](images/media_player_plexdevices.png)
+![](images/media_player_plex_plexdevices_comparison.png)
 
 ## Why not Plex WebHooks
 Web hooks are good for simple action / reaction (media plays, turn on lights). I use something similar for my Blue Iris setup. If that's all you need, then use the web hooks.  This component not only allows you to do the same but it also:
