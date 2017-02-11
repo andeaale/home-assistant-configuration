@@ -771,7 +771,7 @@ class PlexDevice(MediaPlayerDevice):
     def async_turn_off(self):
         """Turn the client off."""
         if self.client:
-            self.media_stop() # Fake it since we can't turn the client off
+            self.client.stop(self._active_media_plexapi_type) # Fake it since we can't turn the client off
 
     def mute_volume(self, mute):
         """Mute the volume.
