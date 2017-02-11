@@ -1,7 +1,123 @@
 """
-Support for streamers and clients of Plex servers.
-For more details about this platform, please refer to the documentation at
-https://github.com/JesseWebDotCom/home-assistant-configuration/blob/master/docs/media_player_plexdevices.md
+PLEXDEVICES
+Displays and controls active and previously connected Plex streamers and clients
+
+Why this over media_player.plex
+A plex streamer is any device that streams from your plex server.  A plex client
+is a streamer but can also be remotely controlled.  The existing media_player.plex
+component only shows clients so you are missing out on things like remote users
+and PlexConnected Apple TV's (how gen 2 and 3 Apple TV's connect to Plex).
+
+media_player.plex is also missing a bunch of meta data, doesn't let you control
+things like volume, and more.  There's also a ton of additional features only
+available in this PlexDevices component.
+
+Overall Benefits:
+    - Misc:
+        - Remote users - see what remote users are streaming
+        - PlexConnect gen 2/3 Apple TV's - see whats streaming on your PlexConnect Apple TV devices
+        - Speedy load (info displays in 0-1 second over media_player.plex 5-10 seconds)
+        - Always art - display media art if thumbnail not available (good for items in Plex with no poster)
+        - Distinguish between Web browser clients - i.e. Any name starting with "Plex Web" get username@ip appended
+            - Ex. "Plex Web (Safari)" is shown as "Plex Web (Safari) - jesse@192.168.1.10"
+            - Customize with friendly names for a better experience:
+                homeassistant:
+                    customize:
+                        media_player.plex_r06sa6ozi98:
+                          friendly_name: Jesse's Laptop
+        - Unique entity ID name - they are now media_player.plex_{id}, where {id} is the unique player ID
+            - This avoids ambuguity issues like media_player.plex_web_safari, media_player.plex_web_safari2
+                - Scenario: Imagine you had an automation based on an entity name (ex. media_player.plex_web_safari)
+                    - The first system that ever connects over safari gets this entity name
+                    - Now you have a timing issue to ensure the right system gets the right name
+                    - You also may have a different issue if the wrong syste gets the name and kicks off your automation
+    - Automations:
+        - A bunch of new attribute values to use in your automations:
+            - ex. Raise the lights when volume low or muted:
+                - Use volume_level and is_muted
+            - ex. Alert when a remote user is streaming
+                - Use friendly_name or entity name
+            - ex. Alert when your child plays a video from the "Adult Movies" library)
+                - Use friendly_name and app_name (Plex Library Name)
+            - ex. Alert when your child plays a song from the "Adult Music" library)
+                - Use friendly_name and app_name (Plex Library Name)
+            - ex. Turn off the lights when playing a video from video libraries but never from music libraries
+                - Use friendly_name and app_name (Plex Library Name)
+            - ex. Alert you when you won't have time to finish watching a movie
+                - Use media_duration (length of movie) and media_position (where you are in the movie) to calculate when the movie will finish / compare that to your calendar appointments, kid's bedtime, etc
+            - Too many more to list
+
+    - Controls:
+        - On/Off: On does nothing but Off stops playing media (good to kick of unwanted users / kids past their bedtime)
+        - Volume/Mute: Can set and mute (Plex client syncs with what HA tells it, not the other way around)
+        - Progress: Display a media progress bar
+        - PlayMedia: Make a plex client play a movie, tv show, or music playlist
+    - Movies:
+        - Display name as "Name (Year)", ex. Blair Witch (2016)
+        - Display library name below movie title (ex. "Adult Movies")
+    - TV:
+        - Display episode and season numbers with leading 0's, ex 02, 05
+        - Display "Show S##E##", ex. Rick and Morty S02E05
+        - Display episode thumbnail instead of show thumbnail
+    - Music:
+        - Display Artist (track artist, if not use album artist)
+        - Set albumn name property
+
+Installation:
+- Copy to your ha\custom_components\media_player directory
+- You may need to "chmod 777 plexdevices.py" on linux systems
+- Add it to your config:
+    media_player:
+      - platform: plexdevices
+- Create the same ha\plex.conf file media_player.plex uses or ha should display
+a configurator to create it for you
+
+Compatibility:
+- Here's what I've tested it with so far:
+    - NVidia Shield
+    - PlexConnected Apple TV 3
+    - Plex Web Safari
+    - Plex Web Chrome
+    - Tivo Plex App
+    - iPhone Plex App
+
+Known Issues:
+- After speedy load, controls will not be available until regular load (5-10 seconds)
+- PlexConnect Apple TV's (issues occur in HA and the Plex Now Playing web page)
+    - No working controls (since they aren't full clients)
+    - Playing music is not visible (likely because it plays as background music)
+    - Playing a season only shows first episode
+- NVidia Shield freezes with PlayMedia Music or Playlist (might just be my Shield)
+
+PlayMedia - You can test using the HA GUI (Services | Media_Player | PlayMedia):
+    MUSIC:
+    {
+        "entity_id" : "media_player.plex_bb72ed6a42aa26ea_com_plexapp_android",
+        "media_content_id": "{ \"library_name\" : \"Jesse Music\", \"artist_name\" : \"Adele\", \"album_name\" : \"25\", \"track_name\" : \"hello\", \"shuffle\": \"0\" }",
+        "media_content_type": "MUSIC"
+    }
+
+    PLAYLIST:
+    {
+        "entity_id" : "media_player.plex_bb72ed6a42aa26ea_com_plexapp_android",
+        "media_content_id": "{\"playlist_name\" : \"The Best of Disco\", \"shuffle\": \"0\" }",
+        "media_content_type": "PLAYLIST"
+    }
+
+    Note: Episode number starts at 0 and increments to the total episode count in all seasons (i.e. no season numbers, just episode indexes)
+    EPISODE:
+    {
+        "entity_id" : "media_player.plex_bb72ed6a42aa26ea_com_plexapp_android",
+        "media_content_id": "{ \"library_name\" : \"Adult TV\", \"show_name\" : \"Rick and Morty\", \"episode_number\" : 15, \"shuffle\": \"0\" }",
+        "media_content_type": "EPISODE"
+    }
+
+    VIDEO:
+    {
+        "entity_id" : "media_player.plex_bb72ed6a42aa26ea_com_plexapp_android",
+        "media_content_id": "{ \"library_name\" : \"Adult Movies\", \"video_name\" : \"Blade\", \"shuffle\": \"0\" }",
+        "media_content_type": "VIDEO"
+    }
 """
 # Required to get a web response from Plex and ignore HTTPS warnings
 import requests
@@ -232,16 +348,16 @@ def setup_plexserver(host, token, hass, add_devices_callback):
 
         new_streamers = []
         for unique_id, active_streamer in active_streamers.items():
+            #dump(active_streamer)
             if unique_id not in all_devices:
                 # add new streamer
-                _LOGGER.info("New Streamer: %s", active_streamer["name"])
                 new_streamer = PlexDevice(None, active_streamer, all_sessions, update_clients_streamers,
                                         update_sessions)
                 all_devices[unique_id] = new_streamer
                 new_streamers.append(new_streamer)
             else:
-                # update streamer
-                _LOGGER.info("Updated Streamer: %s", active_streamer["name"])
+                # update if not a client
+                #if all_devices[unique_id].is_streamer:
                 all_devices[unique_id].reset(None, active_streamer)
 
         if new_streamers:
@@ -250,7 +366,6 @@ def setup_plexserver(host, token, hass, add_devices_callback):
         # Make old devices idle
         for unique_id, device in all_devices.items():
             if not (unique_id  in active_streamers):
-                _LOGGER.info("Old Streamer: %s", device.name)
                 device.set_state('idle')
 
         # Get clients
@@ -267,6 +382,8 @@ def setup_plexserver(host, token, hass, add_devices_callback):
         active_client_ids = []
         new_clients = []
         for active_client in active_clients:
+            #dump(active_client)
+
             # For now, let's allow all deviceClass types
             if active_client.deviceClass in ['badClient']:
                 continue
@@ -275,18 +392,16 @@ def setup_plexserver(host, token, hass, add_devices_callback):
 
             if active_client.machineIdentifier not in all_devices:
                 # add new clients
-                _LOGGER.info("New Client: %s", active_client.title)
                 new_client = PlexDevice(active_client, None, all_sessions, update_clients_streamers,
                                         update_sessions)
                 all_devices[active_client.machineIdentifier] = new_client
                 new_clients.append(new_client)
             else:
                 # update existing clients
-                _LOGGER.info("Updated Client: %s", active_client.title)
                 all_devices[active_client.machineIdentifier].reset(active_client, None)
 
-        if new_streamers:
-            add_devices_callback(new_streamers)
+        if new_clients:
+            add_devices_callback(new_clients)
 
 
     @util.Throttle(MIN_TIME_BETWEEN_SCANS, MIN_TIME_BETWEEN_FORCED_SCANS)
