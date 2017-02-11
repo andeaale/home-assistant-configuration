@@ -1,20 +1,39 @@
 # VIDEO PLAYER PACKAGE
 #----------------------------------------------------------------
 
+homeassistant:
+  customize:
+  #----------------------------------------------------------------
+
+    media_player.living_room_apple_tv:
+      icon: mdi:plex
+      friendly_name: Living Room (Apple TV)
+
+    media_player.jesses_iphone_7_plus:
+      icon: mdi:plex
+      friendly_name: Jesse (iPhone)
+
+    media_player.shield_android_tv:
+      icon: mdi:plex
+      friendly_name: Theater (Shield)
+
+    media_player.plex_for_tivo_tivo_tcda92000:
+      icon: mdi:plex
+      friendly_name: Tivo Mini
+
+    media_player.roku_3__4e757u072189:
+      icon: mdi:plex
+      friendly_name: Bogar (House)
+
 group:
 #----------------------------------------------------------------
-  video_group1:
+  video_plexdevices:
     - media_player.living_room_apple_tv
+    - media_player.jesses_iphone_7_plus
     - media_player.shield_android_tv
-    - media_player.bedroom_apple_tv
-    - media_player.kitchen_apple_tv
-    - media_player.office_apple_tv
-        
-  video_group2:
-    - media_player.playroom_apple_tv
-    - media_player.isabellas_apple_tv
-    - media_player.ryans_apple_tv
-    - media_player.biancas_apple_tv
+    - media_player.plex_for_tivo_tivo_tcda92000
+    - media_player.roku_3__4e757u072189
+
 sensor:
 #----------------------------------------------------------------
 
@@ -30,12 +49,4 @@ sensor:
 media_player:
 #----------------------------------------------------------------
 
-  - platform: plex
-    name: plex_server
-    ip_address: !secret plex_server_host
-    port: !secret plex_server_port
-    token: !secret plex_server_token
-
-  - platform: plexclients
-    host: !secret plex_server_host
-    port: !secret plex_server_port
+  - platform: plexdevices

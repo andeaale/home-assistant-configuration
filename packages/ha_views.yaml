@@ -75,8 +75,7 @@ group:
     view: yes
     icon: mdi:movie
     entities:
-      - group.video_group1
-      - group.video_group2
+      - group.video_plexdevices
 
   scenes_view:
     name: Scenes
@@ -93,8 +92,6 @@ group:
     view: yes
     icon: mdi:radar
     entities:
-      - media_player.plex_server
-      - media_player.shield_android_tv
       - sensor.plex
       - script.backup
       - group.monitor_systems
