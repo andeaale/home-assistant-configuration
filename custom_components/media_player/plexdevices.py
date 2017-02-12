@@ -106,19 +106,30 @@ def get_streamers(plexserver):
                 streamer['media_content_type'] = None
 
             # music
-            streamer['media_album_artist'] = get_xml_attrib_value(MediaContainer, 'grandparentTitle')
-            if get_xml_attrib_value(MediaContainer, 'originalTitle') != '':
-                streamer['media_artist'] = get_xml_attrib_value(MediaContainer, 'originalTitle')
+            if streamer['media_content_type'] is MEDIA_TYPE_MUSIC:
+                streamer['media_album_artist'] = get_xml_attrib_value(MediaContainer, 'grandparentTitle')
+                if get_xml_attrib_value(MediaContainer, 'originalTitle') != '':
+                    streamer['media_artist'] = get_xml_attrib_value(MediaContainer, 'originalTitle')
+                else:
+                    _LOGGER.debug('Using album artist because track artist was not found: content id %s', streamer['media_content_id'])
+                    streamer['media_artist'] = streamer['media_album_artist']
+                streamer['media_album_name'] = get_xml_attrib_value(MediaContainer, 'parentTitle')
+                streamer['media_track'] = get_xml_attrib_value(MediaContainer, 'index')
             else:
-                _LOGGER.warning('Using album artist because track artist was not found: content id %s', streamer['media_content_id'])
-                streamer['media_artist'] = streamer['media_album_artist']
-            streamer['media_album_name'] = get_xml_attrib_value(MediaContainer, 'parentTitle')
-            streamer['media_track'] = get_xml_attrib_value(MediaContainer, 'index')
+                streamer['media_album_artist'] = ''
+                streamer['media_artist'] = ''
+                streamer['media_album_name'] = ''
+                streamer['media_track'] = ''
 
             # episode
-            streamer['media_series_title'] = get_xml_attrib_value(MediaContainer, 'grandparentTitle')
-            streamer['media_season'] = get_xml_attrib_value(MediaContainer, 'parentIndex').zfill(2) # leading zero, ex 02
-            streamer['media_episode'] = get_xml_attrib_value(MediaContainer, 'index').zfill(2) # leading zero, ex 02
+            if streamer['media_content_type'] is MEDIA_TYPE_TVSHOW:
+                streamer['media_series_title'] = get_xml_attrib_value(MediaContainer, 'grandparentTitle')
+                streamer['media_season'] = get_xml_attrib_value(MediaContainer, 'parentIndex').zfill(2) # leading zero, ex 02
+                streamer['media_episode'] = get_xml_attrib_value(MediaContainer, 'index').zfill(2) # leading zero, ex 02
+            else:
+                streamer['media_series_title'] = ''
+                streamer['media_season'] = ''
+                streamer['media_episode'] = ''
 
             # movie
             if media_content_type == MEDIA_TYPE_VIDEO:

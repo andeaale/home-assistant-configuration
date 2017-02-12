@@ -75,7 +75,8 @@ group:
     view: yes
     icon: mdi:movie
     entities:
-      - group.video_plexdevices
+      - group._plex_devices_connected
+      - group._plex_devices_disconnected
 
   scenes_view:
     name: Scenes
