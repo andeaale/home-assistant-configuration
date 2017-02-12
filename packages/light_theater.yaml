@@ -39,18 +39,8 @@ automation:
           seconds: 30
     # Only if not watching TV or playing a game
     condition:
-      condition: and
-      conditions:
-        - condition: template
-          value_template: '{{ trigger.to_state.attributes.current_activity != "Watch TV" }}'
-        - condition: template
-          value_template: '{{ trigger.to_state.attributes.current_activity != "NVidia Shield" }}'
-        - condition: template
-          value_template: '{{ trigger.to_state.attributes.current_activity != "PS4" }}'
-        - condition: template
-          value_template: '{{ trigger.to_state.attributes.current_activity != "Play Xbox One" }}'
-        - condition: template
-          value_template: '{{ trigger.to_state.attributes.current_activity != "Watch Apple TV" }}'         
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.current_activity == "Lights Off" }}'        
     action:
       # Only if auto lights option is on
       service: homeassistant.turn_on

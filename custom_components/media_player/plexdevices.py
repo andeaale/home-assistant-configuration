@@ -1,142 +1,15 @@
 """
-PLEXDEVICES
-Displays and controls active and previously connected Plex streamers and clients
+Support for streamers and clients of Plex servers
 
-Why this over media_player.plex
-A plex streamer is any device that streams from your plex server.  A plex client
-is a streamer but can also be remotely controlled.  The existing media_player.plex
-component only shows clients so you are missing out on things like remote users
-and PlexConnected Apple TV's (how gen 2 and 3 Apple TV's connect to Plex).
-
-media_player.plex is also missing a bunch of meta data, doesn't let you control
-things like volume, and more.  There's also a ton of additional features only
-available in this PlexDevices component.
-
-Overall Benefits:
-    - Misc:
-        - Remote users - see what remote users are streaming
-        - PlexConnect gen 2/3 Apple TV's - see whats streaming on your PlexConnect Apple TV devices
-        - Speedy load (info displays in 0-1 second over media_player.plex 5-10 seconds)
-        - Always art - display media art if thumbnail not available (good for items in Plex with no poster)
-        - Distinguish between Web browser clients - i.e. Any name starting with "Plex Web" get username@ip appended
-            - Ex. "Plex Web (Safari)" is shown as "Plex Web (Safari) - jesse@192.168.1.10"
-            - Customize with friendly names for a better experience:
-                homeassistant:
-                    customize:
-                        media_player.plex_r06sa6ozi98:
-                          friendly_name: Jesse's Laptop
-        - Unique entity ID name - they are now media_player.plex_{id}, where {id} is the unique player ID
-            - This avoids ambuguity issues like media_player.plex_web_safari, media_player.plex_web_safari2
-                - Scenario: Imagine you had an automation based on an entity name (ex. media_player.plex_web_safari)
-                    - The first system that ever connects over safari gets this entity name
-                    - Now you have a timing issue to ensure the right system gets the right name
-                    - You also may have a different issue if the wrong syste gets the name and kicks off your automation
-    - Automations:
-        - A bunch of new attribute values to use in your automations:
-            - ex. Raise the lights when volume low or muted:
-                - Use volume_level and is_muted
-            - ex. Alert when a remote user is streaming
-                - Use friendly_name or entity name
-            - ex. Alert when your child plays a video from the "Adult Movies" library)
-                - Use friendly_name and app_name (Plex Library Name)
-            - ex. Alert when your child plays a song from the "Adult Music" library)
-                - Use friendly_name and app_name (Plex Library Name)
-            - ex. Turn off the lights when playing a video from video libraries but never from music libraries
-                - Use friendly_name and app_name (Plex Library Name)
-            - ex. Alert you when you won't have time to finish watching a movie
-                - Use media_duration (length of movie) and media_position (where you are in the movie) to calculate when the movie will finish / compare that to your calendar appointments, kid's bedtime, etc
-            - Too many more to list
-
-    - Controls:
-        - On/Off: On does nothing but Off stops playing media (good to kick of unwanted users / kids past their bedtime)
-        - Volume/Mute: Can set and mute (Plex client syncs with what HA tells it, not the other way around)
-        - Progress: Display a media progress bar
-        - PlayMedia: Make a plex client play a movie, tv show, or music playlist
-    - Movies:
-        - Display name as "Name (Year)", ex. Blair Witch (2016)
-        - Display library name below movie title (ex. "Adult Movies")
-    - TV:
-        - Display episode and season numbers with leading 0's, ex 02, 05
-        - Display "Show S##E##", ex. Rick and Morty S02E05
-        - Display episode thumbnail instead of show thumbnail
-    - Music:
-        - Display Artist (track artist, if not use album artist)
-        - Set albumn name property
-
-Installation:
-- Copy to your ha\custom_components\media_player directory
-- You may need to "chmod 777 plexdevices.py" on linux systems
-- Add it to your config:
-    media_player:
-      - platform: plexdevices
-- Create the same ha\plex.conf file media_player.plex uses or ha should display
-a configurator to create it for you
-
-Compatibility:
-- Here's what I've tested it with so far:
-    - NVidia Shield
-    - PlexConnected Apple TV 3
-    - Plex Web Safari
-    - Plex Web Chrome
-    - Tivo Plex App
-    - iPhone Plex App
-
-Known Issues:
-- After speedy load, controls will not be available until regular load (5-10 seconds)
-- PlexConnect Apple TV's (issues occur in HA and the Plex Now Playing web page)
-    - No working controls (since they aren't full clients)
-    - Playing music is not visible (likely because it plays as background music)
-    - Playing a season only shows first episode
-- NVidia Shield freezes with PlayMedia Music or Playlist (might just be my Shield)
-
-PlayMedia - You can test using the HA GUI (Services | Media_Player | PlayMedia):
-    MUSIC:
-    {
-        "entity_id" : "media_player.plex_bb72ed6a42aa26ea_com_plexapp_android",
-        "media_content_id": "{ \"library_name\" : \"Jesse Music\", \"artist_name\" : \"Adele\", \"album_name\" : \"25\", \"track_name\" : \"hello\", \"shuffle\": \"0\" }",
-        "media_content_type": "MUSIC"
-    }
-
-    PLAYLIST:
-    {
-        "entity_id" : "media_player.plex_bb72ed6a42aa26ea_com_plexapp_android",
-        "media_content_id": "{\"playlist_name\" : \"The Best of Disco\", \"shuffle\": \"0\" }",
-        "media_content_type": "PLAYLIST"
-    }
-
-    Note: Episode number starts at 0 and increments to the total episode count in all seasons (i.e. no season numbers, just episode indexes)
-    EPISODE:
-    {
-        "entity_id" : "media_player.plex_bb72ed6a42aa26ea_com_plexapp_android",
-        "media_content_id": "{ \"library_name\" : \"Adult TV\", \"show_name\" : \"Rick and Morty\", \"episode_number\" : 15, \"shuffle\": \"0\" }",
-        "media_content_type": "EPISODE"
-    }
-
-    VIDEO:
-    {
-        "entity_id" : "media_player.plex_bb72ed6a42aa26ea_com_plexapp_android",
-        "media_content_id": "{ \"library_name\" : \"Adult Movies\", \"video_name\" : \"Blade\", \"shuffle\": \"0\" }",
-        "media_content_type": "VIDEO"
-    }
+For more details about this platform, please refer to the documentation at
+https://github.com/JesseWebDotCom/home-assistant-configuration/blob/master/docs/media_player_plexdevices.md
 """
-# Required to get a web response from Plex and ignore HTTPS warnings
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
-# Required to parse the xml web response from Plex
-# If available, use the C implementation: its faster and consumes less memory
-try:
-    import xml.etree.cElementTree as ET
-except ImportError:
-    import xml.etree.ElementTree as ET
-
-import asyncio
-import json
-import logging
-import os
-from datetime import timedelta
 from urllib.parse import urlparse
+from datetime import timedelta
+import os
+import logging
+import json
+import asyncio
 
 import homeassistant.util as util
 from homeassistant.components.media_player import (
@@ -149,6 +22,21 @@ from homeassistant.const import (
     STATE_UNKNOWN)
 from homeassistant.loader import get_component
 from homeassistant.helpers.event import (track_utc_time_change)
+
+# Required to get a web response from Plex and ignore HTTPS warnings
+import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+# Required to parse the xml web response from Plex
+# If available, use the C implementation: its faster and consumes less memory
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
+GROUP_CONNECTED_DEVICES = 'group._plex_devices_connected'
+GROUP_DISCONNECTED_DEVICES = 'group._plex_devices_disconnected'
 
 REQUIREMENTS = ['plexapi==2.0.2']
 MIN_TIME_BETWEEN_SCANS = timedelta(seconds=10)
@@ -167,8 +55,8 @@ SUPPORT_PLEX = SUPPORT_PAUSE | SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
 def dump(obj):
     """DELETE ME - THIS IS FOR TROUBLESHOOTING ONLY"""
     for attr in dir(obj):
-        if hasattr( obj, attr ):
-            print( "obj.%s = %s" % (attr, getattr(obj, attr)))
+        if hasattr(obj, attr):
+            print("obj.%s = %s" % (attr, getattr(obj, attr)))
 
 def get_xml_attrib_value(element, attrib_name):
     """Get an XML element attribute or return '' if it doesn't exist"""
@@ -190,37 +78,39 @@ def get_streamers(plexserver):
             streamer = {}
 
             streamer['app_name'] = plexserver.library.sectionByID(get_xml_attrib_value(MediaContainer, 'librarySectionID')).title
+            streamer['media_content_id'] = get_xml_attrib_value(MediaContainer, 'ratingKey')
+            streamer['media_title'] = get_xml_attrib_value(MediaContainer, 'title')
 
             # use art if thumbnail cannot be found
             streamer['media_image_url'] = plexserver.url(get_xml_attrib_value(MediaContainer, 'thumb'))
             thumb_response = requests.get(streamer['media_image_url'], verify=False)
             if thumb_response.status_code != 200:
+                _LOGGER.debug('Using art because thumbnail was not found: content id %s', streamer['media_content_id'])
                 streamer['media_image_url'] = plexserver.url(get_xml_attrib_value(MediaContainer, 'art'))
 
-            streamer['media_title'] = get_xml_attrib_value(MediaContainer, 'title')
             streamer['media_year'] = get_xml_attrib_value(MediaContainer, 'year')
             media_duration = get_xml_attrib_value(MediaContainer, 'duration')
             streamer['media_duration'] = int(media_duration) if media_duration != '' else 0
             media_position = get_xml_attrib_value(MediaContainer, 'viewOffset')
             streamer['media_position'] = int(media_position) if media_position != '' else 0
-            streamer['media_content_id'] = get_xml_attrib_value(MediaContainer, 'ratingKey')
 
             # type
             media_content_type = get_xml_attrib_value(MediaContainer, 'type')
             if media_content_type == 'episode':
                 streamer['media_content_type'] = MEDIA_TYPE_TVSHOW
             elif media_content_type == 'movie':
-                streamer['media_content_type'] =  MEDIA_TYPE_VIDEO
+                streamer['media_content_type'] = MEDIA_TYPE_VIDEO
             elif media_content_type == 'track':
-                streamer['media_content_type'] =  MEDIA_TYPE_MUSIC
+                streamer['media_content_type'] = MEDIA_TYPE_MUSIC
             else:
-                streamer['media_content_type'] =  None
+                streamer['media_content_type'] = None
 
             # music
             streamer['media_album_artist'] = get_xml_attrib_value(MediaContainer, 'grandparentTitle')
             if get_xml_attrib_value(MediaContainer, 'originalTitle') != '':
                 streamer['media_artist'] = get_xml_attrib_value(MediaContainer, 'originalTitle')
             else:
+                _LOGGER.warning('Using album artist because track artist was not found: content id %s', streamer['media_content_id'])
                 streamer['media_artist'] = streamer['media_album_artist']
             streamer['media_album_name'] = get_xml_attrib_value(MediaContainer, 'parentTitle')
             streamer['media_track'] = get_xml_attrib_value(MediaContainer, 'index')
@@ -232,12 +122,11 @@ def get_streamers(plexserver):
 
             # movie
             if media_content_type == MEDIA_TYPE_VIDEO:
-                streamer['media_title'] = '{} ({})'.format(streamer['media_title'],streamer['media_year'])
+                streamer['media_title'] = '{} ({})'.format(streamer['media_title'], streamer['media_year'])
 
             for Player in MediaContainer.iterfind('Player'):
                 streamer['unique_id'] = get_xml_attrib_value(Player, 'machineIdentifier')
                 streamer['name'] = get_xml_attrib_value(Player, 'title')
-                #streamer['device'] = get_xml_attrib_value(Player, 'device')
 
                 state = get_xml_attrib_value(Player, 'state')
                 if state == 'playing':
@@ -250,9 +139,6 @@ def get_streamers(plexserver):
 
             for User in MediaContainer.iterfind('User'):
                 streamer['username'] = get_xml_attrib_value(User, 'title')
-
-            # for Session in MediaContainer.iterfind('Session'):
-            #     streamer['location'] = get_xml_attrib_value(Session, 'location')
 
             streamers[streamer['unique_id']] = streamer
 
@@ -282,7 +168,6 @@ def config_from_file(filename, config=None):
         else:
             return {}
 
-
 def setup_platform(hass, config, add_devices_callback, discovery_info=None):
     """Setup the Plex platform."""
     config = config_from_file(hass.config.path(PLEX_CONFIG_FILE))
@@ -304,6 +189,10 @@ def setup_platform(hass, config, add_devices_callback, discovery_info=None):
 
     setup_plexserver(host, token, hass, add_devices_callback)
 
+def set_group_members(hass, group_entity_id, member_entity_id_list):
+    """Creates group if doesn't exist and sets memberships"""
+    hass.states.set(group_entity_id, 'off', {
+        'entity_id': member_entity_id_list})
 
 def setup_plexserver(host, token, hass, add_devices_callback):
     """Setup a plexserver based on host parameter."""
@@ -337,6 +226,7 @@ def setup_plexserver(host, token, hass, add_devices_callback):
 
     all_devices = {}
     all_sessions = {}
+
     track_utc_time_change(hass, lambda now: update_clients_streamers(), second=30)
 
     @util.Throttle(MIN_TIME_BETWEEN_SCANS, MIN_TIME_BETWEEN_FORCED_SCANS)
@@ -346,27 +236,42 @@ def setup_plexserver(host, token, hass, add_devices_callback):
         # Get streamers
         active_streamers = get_streamers(plexserver)
 
+        # used for dynamic grouping
+        connected_entity_id_list = []
+        disconnected_entity_id_list = []
+
         new_streamers = []
         for unique_id, active_streamer in active_streamers.items():
-            #dump(active_streamer)
             if unique_id not in all_devices:
-                # add new streamer
-                new_streamer = PlexDevice(None, active_streamer, all_sessions, update_clients_streamers,
-                                        update_sessions)
+                # create new streamer
+                new_streamer = PlexDevice(None, active_streamer, all_sessions,
+                    update_clients_streamers, update_sessions)
+
+                if new_streamer.ha_entity_id:
+                    connected_entity_id_list.append(new_streamer.ha_entity_id)
+
                 all_devices[unique_id] = new_streamer
                 new_streamers.append(new_streamer)
             else:
-                # update if not a client
-                #if all_devices[unique_id].is_streamer:
+                # update streamer
                 all_devices[unique_id].reset(None, active_streamer)
+
+                if all_devices[unique_id].ha_entity_id:
+                    connected_entity_id_list.append(all_devices[unique_id].ha_entity_id)
 
         if new_streamers:
             add_devices_callback(new_streamers)
 
         # Make old devices idle
         for unique_id, device in all_devices.items():
-            if not (unique_id  in active_streamers):
+            if unique_id not in active_streamers:
                 device.set_state('idle')
+                if device.ha_entity_id:
+                    disconnected_entity_id_list.append(device.ha_entity_id)
+
+        # set groups with updated memberships
+        set_group_members(hass, GROUP_CONNECTED_DEVICES, connected_entity_id_list)
+        set_group_members(hass, GROUP_DISCONNECTED_DEVICES, disconnected_entity_id_list)
 
         # Get clients
         try:
@@ -382,8 +287,6 @@ def setup_plexserver(host, token, hass, add_devices_callback):
         active_client_ids = []
         new_clients = []
         for active_client in active_clients:
-            #dump(active_client)
-
             # For now, let's allow all deviceClass types
             if active_client.deviceClass in ['badClient']:
                 continue
@@ -392,8 +295,8 @@ def setup_plexserver(host, token, hass, add_devices_callback):
 
             if active_client.machineIdentifier not in all_devices:
                 # add new clients
-                new_client = PlexDevice(active_client, None, all_sessions, update_clients_streamers,
-                                        update_sessions)
+                new_client = PlexDevice(active_client, None, all_sessions,
+                    update_clients_streamers, update_sessions)
                 all_devices[active_client.machineIdentifier] = new_client
                 new_clients.append(new_client)
             else:
@@ -402,7 +305,6 @@ def setup_plexserver(host, token, hass, add_devices_callback):
 
         if new_clients:
             add_devices_callback(new_clients)
-
 
     @util.Throttle(MIN_TIME_BETWEEN_SCANS, MIN_TIME_BETWEEN_FORCED_SCANS)
     def update_sessions():
@@ -419,7 +321,6 @@ def setup_plexserver(host, token, hass, add_devices_callback):
 
     update_clients_streamers()
     update_sessions()
-
 
 def request_configuration(host, hass, add_devices_callback):
     """Request configuration steps from the user."""
@@ -458,22 +359,8 @@ class PlexDevice(MediaPlayerDevice):
         streamer_unique_id = streamer['unique_id'] if streamer else client_unique_id
         self._unique_id = streamer_unique_id
 
-        # rename the entity
-        # self.entity_id = "%s.%s_%s" % (
-        #     'media_player', 'plex', self._unique_id.lower().replace('-','_'))
-
-        #client_username = self._convert_na_to_none(client.machineIdentifier) if client else ''
-        streamer_username = streamer['username'] if streamer else '' #client_username
-        self._username = streamer_username
-
-        #client_address = self._convert_na_to_none(client.machineIdentifier) if client else ''
-        streamer_address = streamer['address'] if streamer else '' #client_address
-        self._address = streamer_address
-
         client_name = self._convert_na_to_none(client.title) if client else ''
         streamer_name = streamer['name'] if streamer else client_name
-        # if streamer_name.lower().startswith('plex web'):
-        #     streamer_name = streamer_name + " - " + self._username + "@" + self._address
         self._name = streamer_name
 
         self.client = None
@@ -532,9 +419,15 @@ class PlexDevice(MediaPlayerDevice):
             self._state = STATE_UNKNOWN
 
     @property
+    def ha_entity_id(self):
+        """HA entity ID"""
+        if self.entity_id:
+            return self.entity_id
+
+    @property
     def is_streamer(self):
         """Return true if streamer, false if client"""
-        return (self.streamer is not None)
+        return self.streamer is not None
 
     @property
     def unique_id(self):
@@ -630,6 +523,7 @@ class PlexDevice(MediaPlayerDevice):
                 if self._convert_na_to_none(self.session.originalTitle) is not None:
                     return self._convert_na_to_none(self.session.originalTitle)
                 else:
+                    _LOGGER.debug('Using album artist because track artist was not found: content id %s', self.unique_id)
                     return self._convert_na_to_none(self.session.grandparentTitle)
 
     @property
@@ -660,11 +554,6 @@ class PlexDevice(MediaPlayerDevice):
 
             if self.media_content_type is MEDIA_TYPE_MUSIC:
                 return self._convert_na_to_none(self.session.index)
-
-    @property
-    def media_duration(self):
-        """Duration of current playing media in seconds."""
-        return self._media_duration
 
     @property
     def media_image_url(self):
@@ -742,8 +631,7 @@ class PlexDevice(MediaPlayerDevice):
     @property
     def supported_media_commands(self):
         """Flag of media commands that are supported."""
-        #return SUPPORT_PLEX
-        if self.client is None: # or self.state == STATE_UNKNOWN or self.state == STATE_IDLE:
+        if self.client is None or self.state in [STATE_IDLE, STATE_OFF, STATE_UNKNOWN]:
             return None
         else:
             return SUPPORT_PLEX
@@ -752,7 +640,7 @@ class PlexDevice(MediaPlayerDevice):
         """Set volume level, range 0..1."""
         if self.client:
             self.client.setVolume(int(volume * 100),
-                              self._active_media_plexapi_type)
+                self._active_media_plexapi_type)
             self._volume_level = volume
 
     @property
@@ -817,7 +705,9 @@ class PlexDevice(MediaPlayerDevice):
 
     @asyncio.coroutine
     def async_play_media(self, media_type, media_id, **kwargs):
-        # MUSIC, TVSHOW, VIDEO, EPISODE, CHANNEL or PLAYLIST
+        """Play a piece of media.
+        This method must be run in the event loop and returns a coroutine.
+        """
         if self.client:
             src = json.loads(media_id)
 
@@ -833,17 +723,14 @@ class PlexDevice(MediaPlayerDevice):
                 media = self.client.server.library.section(src['library_name']).get(src['video_name'])
 
             if media:
-                self.playMedia(media,shuffle=src['shuffle'])
+                self._client_play_media(media, shuffle=src['shuffle'])
 
-    '''
-
-    '''
-
-    def playMedia(self, media, **params):
+    def _client_play_media(self, media, **params):
+        """Instrutcs Plex client to play a piece of media."""
         if self.client:
             import plexapi.playqueue
             server_url = media.server.baseurl.split(':')
-            playqueue = plexapi.playqueue.PlayQueue.create(self.client.server,media,**params)
+            playqueue = plexapi.playqueue.PlayQueue.create(self.client.server, media, **params)
             self.client.sendCommand('playback/playMedia', **dict({
                 'machineIdentifier': self.client.server.machineIdentifier,
                 'address': server_url[1].strip('/'),
@@ -851,3 +738,5 @@ class PlexDevice(MediaPlayerDevice):
                 'key': media.key,
                 'containerKey': '/playQueues/%s?window=100&own=1' % playqueue.playQueueID,
             }, **params))
+        else:
+            _LOGGER.error('Streamer cannot play media: %s', self.entity_id)
