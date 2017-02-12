@@ -63,7 +63,7 @@ automation:
             value_template: '{{ trigger.to_state.attributes.current_activity == "Watch Apple TV" }}'
     action:
       - service: script.turn_on
-        entity_id: scipt.auto_off_theater_light      
+        entity_id: scipt.auto_off_theater_light
       - service: scene.turn_on
         entity_id: scene.theater_off
 

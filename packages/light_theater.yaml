@@ -40,15 +40,15 @@ automation:
     # Only if not watching TV or playing a game
     condition:
       - condition: template
-        value_template: '{{ trigger.to_state.attributes.current_activity == "Lights Off" }}'        
+        value_template: '{{ states.remote.harmonyhubtheater.attributes.current_activity == "PowerOff" }}'
     action:
       # Only if auto lights option is on
       service: homeassistant.turn_on
       data_template:
         entity_id: >
-          {% if trigger.to_state.state == "On" and state.input_boolean.options_lights_auto_on.state == "on" %}
+          {% if trigger.to_state.state == "On" and states.input_boolean.options_lights_auto_on.state == "on" %}
             light.theater_lights_level_23_0
-          {% elif trigger.to_state.state == "Off" and state.input_boolean.options_lights_auto_off.state == "on"  %}
+          {% elif trigger.to_state.state == "Off" and states.input_boolean.options_lights_auto_off.state == "on"  %}
             script.auto_off_theater_light
           {% endif %}
 
