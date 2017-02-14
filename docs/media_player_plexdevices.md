@@ -97,13 +97,18 @@ Web hooks are good for simple action / reaction (media plays, turn on lights). I
 2. Add it to your config:
 ```
     media_player:
-			- platform: plex
+			- platform: plexdevices
 		    include_non_clients: true
 		    use_episode_art: true
 		    use_dynamic_groups: true
 ```
 Note: include_non_clients, use_episode_art, and use_dynamic_groups are optional and default to false
-3. Create the same ha\plex.conf file media_player.plex uses or ha should display a configurator to create it for you
+3. To avoid strange issues and seeing double, tripple copies of the same plex device:
+	* remove the "- platform: plex" reference from your config
+	* Disable discovery in your config
+4. As an alternative to step 3, you can basically replace the existing plex component with this one:
+	* Just rename plexdevices.py to plex.py and update your config from "- platform: plexdevices" to "- platform: plex".
+5. Create the same ha\plex.conf file media_player.plex uses or ha should display a configurator to create it for you
 
 ## Compatibility
 Here's what I've tested it with so far:
