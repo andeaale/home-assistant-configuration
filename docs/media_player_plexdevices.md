@@ -49,14 +49,13 @@ Web hooks are good for simple action / reaction (media plays, turn on lights). I
 * Misc
   * Remote users - see what remote users are streaming
   * PlexConnect gen 2/3 Apple TV's - see whats streaming on your PlexConnect Apple TV devices
-  * Speedy load (info displays in 0-1 second over media_player.plex 5-10 seconds)
-  * Dynamic grouping - Automatically groups devices into "connected" and "disconnected" groups enabling you to:
+  * Dynamic grouping - Automatically groups devices into "active" and "inactive" groups enabling you to:
     * avoid manually maintaining group memberships because you just want to see who's connected / streaming
-    * show all connected devices in an ha view (like the now playing view within plex)
-    * create a "plex activity monitor" like sensor just by displaying the "conencted" group count
-    * show the "disconnected" group as running history of previous connections
+    * show all active devices in an ha view (like the now playing view within plex)
+    * create a "plex activity monitor" like sensor just by displaying the "active" group count
+    * show the "inactive" group as running history of previous connections
     * set automations like:
-      * alert me when connected count is high, alert me when a new device connects (i.e. connected group size increased)
+      * alert me when connected count is high, alert me when a new device connects (i.e. active group size increased)
       * alert on or disconnect an unknown device (i.e. device in "connected" group is not in some other list or group you maintain)
       * stop any device streaming for more than a day
     * Too many more to list
@@ -98,8 +97,12 @@ Web hooks are good for simple action / reaction (media plays, turn on lights). I
 2. Add it to your config:
 ```
     media_player:
-      - platform: plexdevices
+			- platform: plex
+		    include_non_clients: true
+		    use_episode_art: true
+		    use_dynamic_groups: true
 ```
+Note: include_non_clients, use_episode_art, and use_dynamic_groups are optional and default to false
 3. Create the same ha\plex.conf file media_player.plex uses or ha should display a configurator to create it for you
 
 ## Compatibility
@@ -112,7 +115,6 @@ Here's what I've tested it with so far:
 * iPhone Plex App
 
 ## Known Issues
-* After speedy load, controls will not be available until regular load (5-10 seconds)
 * Dynamic groups aren't fully being recognized so until I get a dev to debug this issue you won't be able to do things like this:
   * {{ states.group._plex_devices_connected.attributes.entity_id | length }}
 * PlexConnect Apple TV's (issues occur in HA and the Plex Now Playing web page)
@@ -125,8 +127,8 @@ Here's what I've tested it with so far:
 
 ### Dynamic Grouping
 This component will automatically create and maintain the following groups:
-* group._plex_devices_connected - Device that are currently playing or pause on Plex media
-* group._plex_devices_disconnected - Device that are idle or in an unknown state
+* group._plex_devices_active - Device that are currently playing or paused on Plex media
+* group._plex_devices_inactive - Device that are idle or in an unknown state
 
 #### Examples
 Example: Display an "All Plex Devices" view
@@ -136,24 +138,24 @@ group:
     name: All Plex Devices
     view: yes
     entities:
-    - group._plex_devices_connected
-    - group._plex_devices_disconnected
+    - group._plex_devices_active
+    - group._plex_devices_inactive
 ```
 
-Example: Display "Connected Plex Devices" and "Disconnected Plex Devices" views
+Example: Display "Active Plex Devices" and "Inactive Plex Devices" views
 ```
 group:
-  connected_plex_view:
-    name: Connected
+  active_plex_view:
+    name: Active
     view: yes
     entities:
-    - group._plex_devices_connected
+    - group._plex_devices_active
 
-  disconnected_plex_view:
-    name: Disconnected
+  inactive_plex_view:
+    name: Inactive
     view: yes
     entities:
-    - group._plex_devices_disconnected
+    - group._plex_devices_inactive
 ```
 
 ### PlayMedia
