@@ -103,7 +103,7 @@ Web hooks are good for simple action / reaction (media plays, turn on lights). I
 		    use_dynamic_groups: true
 				use_custom_entity_ids: true
 ```
-Note: include_non_clients, use_episode_art, and use_dynamic_groups are optional and default to false
+Note: include_non_clients, use_episode_art, use_dynamic_groups, and use_custom_entity_ids are optional and default to false if not specified
 3. To avoid strange issues and seeing double, tripple copies of the same plex device:
 	* remove the "- platform: plex" reference from your config
 	* Disable discovery in your config
