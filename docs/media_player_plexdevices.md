@@ -101,6 +101,7 @@ Web hooks are good for simple action / reaction (media plays, turn on lights). I
 		    include_non_clients: true
 		    use_episode_art: true
 		    use_dynamic_groups: true
+				use_custom_entity_ids: true
 ```
 Note: include_non_clients, use_episode_art, and use_dynamic_groups are optional and default to false
 3. To avoid strange issues and seeing double, tripple copies of the same plex device:
@@ -109,6 +110,13 @@ Note: include_non_clients, use_episode_art, and use_dynamic_groups are optional 
 4. As an alternative to step 3, you can basically replace the existing plex component with this one:
 	* Just rename plexdevices.py to plex.py and update your config from "- platform: plexdevices" to "- platform: plex".
 5. Create the same ha\plex.conf file media_player.plex uses or ha should display a configurator to create it for you
+
+### Configuration
+This component supports the following optional platform configurations (which all default to false):
+* include_non_clients - includes non-controllable devices (ex. PlexConnect Apple TV's)
+* use_episode_art - Use episode art instead of show art
+* use_dynamic_groups - Dynamically group devices into active and inactive groups
+* use_custom_entity_ids - use the plex client ID as the entity ID instead of the plex client name.
 
 ## Compatibility
 Here's what I've tested it with so far:
@@ -120,13 +128,17 @@ Here's what I've tested it with so far:
 * iPhone Plex App
 
 ## Known Issues
+* After pressing off and having the playing media stop, pressing play does nothing (theory is that off/stop clears the current media from the queue, so pressing play is starting a queue of nothing).
 * Dynamic groups aren't fully being recognized so until I get a dev to debug this issue you won't be able to do things like this:
   * {{ states.group._plex_devices_connected.attributes.entity_id | length }}
 * PlexConnect Apple TV's (issues occur in HA and the Plex Now Playing web page)
   * No working controls (since they aren't full clients)
   * Playing music is not visible (likely because it plays as background music)
   * Playing a season only shows first episode
-* NVidia Shield freezes with PlayMedia Music or Playlist (might just be my Shield)
+* NVidia Shield
+	*  freezes with PlayMedia Music or Playlist (might just be my Shield)
+	* only supports volumes 2-100.  So setting a volume lower than 2 or trying to mute will not work.
+	* does not work when configuring this component to use the plex server running on the Shield
 
 ## Usage
 

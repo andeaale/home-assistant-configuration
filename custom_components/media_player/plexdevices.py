@@ -43,11 +43,13 @@ GROUP_INACTIVE_DEVICES = 'group._plex_devices_inactive'
 CONF_INCLUDE_NON_CLIENTS = 'include_non_clients'
 CONF_USE_EPISODE_ART = 'use_episode_art'
 CONF_USE_DYNAMIC_GROUPS = 'use_dynamic_groups'
+CONF_USE_CUSTOM_ENTITY_IDS = 'use_custom_entity_ids'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_INCLUDE_NON_CLIENTS, default=False): cv.boolean,
     vol.Optional(CONF_USE_EPISODE_ART, default=False): cv.boolean,
     vol.Optional(CONF_USE_DYNAMIC_GROUPS, default=False): cv.boolean,
+    vol.Optional(CONF_USE_CUSTOM_ENTITY_IDS, default=False): cv.boolean,
 })
 
 # Map ip to request id for configuring
@@ -55,8 +57,8 @@ _CONFIGURING = {}
 _LOGGER = logging.getLogger(__name__)
 
 SUPPORT_PLEX = SUPPORT_PAUSE | SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
-    SUPPORT_STOP | SUPPORT_VOLUME_SET | SUPPORT_PLAY | SUPPORT_VOLUME_MUTE | \
-    SUPPORT_SEEK | SUPPORT_TURN_OFF
+    SUPPORT_STOP | SUPPORT_VOLUME_SET | SUPPORT_PLAY | SUPPORT_SEEK | \
+    SUPPORT_TURN_OFF
 
 def config_from_file(filename, config=None):
     """Small configuration file management function."""
@@ -89,6 +91,7 @@ def setup_platform(hass, config, add_devices_callback, discovery_info=None):
     optional_config[CONF_INCLUDE_NON_CLIENTS] = config.get(CONF_INCLUDE_NON_CLIENTS)
     optional_config[CONF_USE_EPISODE_ART] = config.get(CONF_USE_EPISODE_ART)
     optional_config[CONF_USE_DYNAMIC_GROUPS] = config.get(CONF_USE_DYNAMIC_GROUPS)
+    optional_config[CONF_USE_CUSTOM_ENTITY_IDS] = config.get(CONF_USE_CUSTOM_ENTITY_IDS)
 
     """Setup the Plex platform."""
     config = config_from_file(hass.config.path(PLEX_CONFIG_FILE))
@@ -187,6 +190,11 @@ def setup_plexserver(host, token, hass, optional_config, add_devices_callback):
                 else:
                     plex_clients[machineIdentifier].set_session(session)
 
+        # force devices to idle that do not have a valid session
+        for machineIdentifier, client in plex_clients.items():
+            if client.session is None:
+                client.set_state(STATE_IDLE)
+
         # add devices to dynamic groups
         if optional_config[CONF_USE_DYNAMIC_GROUPS]:
             active_entity_id_list = []
@@ -260,37 +268,37 @@ class PlexClient(MediaPlayerDevice):
         self.plex_sessions = plex_sessions
         self.update_devices = update_devices
         self.update_sessions = update_sessions
-        self.set_device(device)
         self.set_session(session)
+        self.set_device(device)
         self._season = None
+        self._state = STATE_IDLE
         self._volume_muted = False # since we can't retrieve remotely
         self._volume_level = 1 # since we can't retrieve remotely
         self._previous_volume_level = 1 # Used in fake muting
 
+        if self.optional_config[CONF_USE_CUSTOM_ENTITY_IDS]:
+            # rename the entity
+            self.entity_id = "%s.%s" % (
+                'media_player', self.machine_identifier.lower().replace('-','_'))
+
     def set_device(self, device):
         """Set the device property."""
         self.device = device
+        self._session = None
 
     def set_session(self, session):
         """Set the session property."""
         self._session = session
 
+    def set_state(self, state):
+        """Set the state property."""
+        self._state = state
+
     @property
     def unique_id(self):
         """Return the id of this plex client."""
-        machineIdentifier = None
-        name = ''
-
-        if self.device:
-            machineIdentifier = self.device.machineIdentifier
-            name = self.device.title
-
-        if self.session and self.session.player:
-            machineIdentifier = self.session.player.machineIdentifier
-            name = self.session.player.title
-
         return '{}.{}'.format(
-            self.__class__, machineIdentifier or name)
+            self.__class__, self.machine_identifier or self.name)
 
     @property
     def name(self):
@@ -299,6 +307,19 @@ class PlexClient(MediaPlayerDevice):
             return self.device.title or DEVICE_DEFAULT_NAME
         if self.session and self.session.player:
             return self.session.player.title
+
+    @property
+    def machine_identifier(self):
+        """Return the machine identifier of the device."""
+        machineIdentifier = None
+
+        if self.device:
+            machineIdentifier = self.device.machineIdentifier
+
+        if self.session and self.session.player:
+            machineIdentifier = self.session.player.machineIdentifier
+
+        return machineIdentifier
 
     @property
     def app_name(self):
@@ -324,14 +345,16 @@ class PlexClient(MediaPlayerDevice):
         if self.session and self.session.player:
             state = self.session.player.state
             if state == 'playing':
-                return STATE_PLAYING
+                self._state = STATE_PLAYING
             elif state == 'paused':
-                return STATE_PAUSED
+                self._state = STATE_PAUSED
         # This is nasty. Need to find a way to determine alive
         elif self.device:
-            return STATE_IDLE
+            self._state = STATE_IDLE
         else:
-            return STATE_OFF
+            self._state = STATE_OFF
+
+        return self._state
 
     def update(self):
         """Get the latest details."""
@@ -492,10 +515,26 @@ class PlexClient(MediaPlayerDevice):
                     return str(self.session.index).zfill(2)
 
     @property
+    def make(self):
+        """The make of the device (ex. SHIELD Android TV)."""
+        if self.session and self.session.player:
+            return self._convert_na_to_none(self.session.player.device)
+
+    @property
     def supported_features(self):
         """Flag media player features that are supported."""
+        features = None
         if self.device:
-            return SUPPORT_PLEX
+            features = SUPPORT_PLEX
+
+            features = features
+            if self.make == "SHIELD Android TV":
+                #No mute since device only supports volume 2-100
+                features = features
+            else:
+                features = features | SUPPORT_VOLUME_MUTE
+
+        return features
 
     def set_volume_level(self, volume):
         """Set volume level, range 0..1."""
