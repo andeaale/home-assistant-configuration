@@ -24,9 +24,8 @@ from homeassistant.components.media_player import (
     SUPPORT_PREVIOUS_TRACK, SUPPORT_PAUSE, SUPPORT_STOP, SUPPORT_VOLUME_SET,
     SUPPORT_PLAY, SUPPORT_VOLUME_MUTE, SUPPORT_TURN_OFF, SUPPORT_SEEK,
     PLATFORM_SCHEMA, MediaPlayerDevice)
-from homeassistant.const import (
-    DEVICE_DEFAULT_NAME, STATE_IDLE, STATE_OFF, STATE_PAUSED, STATE_PLAYING,
-    STATE_UNKNOWN)
+from homeassistant.const import (DEVICE_DEFAULT_NAME, STATE_IDLE, STATE_OFF,
+                                 STATE_PAUSED, STATE_PLAYING, STATE_UNKNOWN)
 from homeassistant.loader import get_component
 from homeassistant.helpers.event import (track_utc_time_change)
 import homeassistant.helpers.config_validation as cv
@@ -46,10 +45,14 @@ CONF_USE_DYNAMIC_GROUPS = 'use_dynamic_groups'
 CONF_USE_CUSTOM_ENTITY_IDS = 'use_custom_entity_ids'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Optional(CONF_INCLUDE_NON_CLIENTS, default=False): cv.boolean,
-    vol.Optional(CONF_USE_EPISODE_ART, default=False): cv.boolean,
-    vol.Optional(CONF_USE_DYNAMIC_GROUPS, default=False): cv.boolean,
-    vol.Optional(CONF_USE_CUSTOM_ENTITY_IDS, default=False): cv.boolean,
+    vol.Optional(CONF_INCLUDE_NON_CLIENTS, default=False):
+    cv.boolean,
+    vol.Optional(CONF_USE_EPISODE_ART, default=False):
+    cv.boolean,
+    vol.Optional(CONF_USE_DYNAMIC_GROUPS, default=False):
+    cv.boolean,
+    vol.Optional(CONF_USE_CUSTOM_ENTITY_IDS, default=False):
+    cv.boolean,
 })
 
 # Map ip to request id for configuring
@@ -59,6 +62,7 @@ _LOGGER = logging.getLogger(__name__)
 SUPPORT_PLEX = SUPPORT_PAUSE | SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
     SUPPORT_STOP | SUPPORT_VOLUME_SET | SUPPORT_PLAY | SUPPORT_SEEK | \
     SUPPORT_TURN_OFF
+
 
 def config_from_file(filename, config=None):
     """Small configuration file management function."""
@@ -86,14 +90,18 @@ def config_from_file(filename, config=None):
 
 
 def setup_platform(hass, config, add_devices_callback, discovery_info=None):
+    """Setup the Plex platform."""
+
     #optional parameters
     optional_config = {}
-    optional_config[CONF_INCLUDE_NON_CLIENTS] = config.get(CONF_INCLUDE_NON_CLIENTS)
+    optional_config[CONF_INCLUDE_NON_CLIENTS] = config.get(
+        CONF_INCLUDE_NON_CLIENTS)
     optional_config[CONF_USE_EPISODE_ART] = config.get(CONF_USE_EPISODE_ART)
-    optional_config[CONF_USE_DYNAMIC_GROUPS] = config.get(CONF_USE_DYNAMIC_GROUPS)
-    optional_config[CONF_USE_CUSTOM_ENTITY_IDS] = config.get(CONF_USE_CUSTOM_ENTITY_IDS)
+    optional_config[CONF_USE_DYNAMIC_GROUPS] = config.get(
+        CONF_USE_DYNAMIC_GROUPS)
+    optional_config[CONF_USE_CUSTOM_ENTITY_IDS] = config.get(
+        CONF_USE_CUSTOM_ENTITY_IDS)
 
-    """Setup the Plex platform."""
     config = config_from_file(hass.config.path(PLEX_CONFIG_FILE))
     if len(config):
         # Setup a configured PlexServer
@@ -113,10 +121,12 @@ def setup_platform(hass, config, add_devices_callback, discovery_info=None):
 
     setup_plexserver(host, token, hass, optional_config, add_devices_callback)
 
+
 def set_group_members(hass, group_entity_id, member_entity_id_list):
     """Creates group if doesn't exist and sets memberships"""
-    hass.states.set(group_entity_id, 'off', {
-        'entity_id': member_entity_id_list})
+    hass.states.set(group_entity_id, 'off',
+                    {'entity_id': member_entity_id_list})
+
 
 def setup_plexserver(host, token, hass, optional_config, add_devices_callback):
     """Setup a plexserver based on host parameter."""
@@ -125,12 +135,12 @@ def setup_plexserver(host, token, hass, optional_config, add_devices_callback):
 
     try:
         plexserver = plexapi.server.PlexServer('http://%s' % host, token)
-    except (plexapi.exceptions.BadRequest,
-            plexapi.exceptions.Unauthorized,
+    except (plexapi.exceptions.BadRequest, plexapi.exceptions.Unauthorized,
             plexapi.exceptions.NotFound) as error:
         _LOGGER.info(error)
         # No token or wrong token
-        request_configuration(host, hass, optional_config, add_devices_callback)
+        request_configuration(host, hass, optional_config,
+                              add_devices_callback)
         return
 
     # If we came here and configuring this host, mark as done
@@ -142,8 +152,9 @@ def setup_plexserver(host, token, hass, optional_config, add_devices_callback):
 
     # Save config
     if not config_from_file(
-            hass.config.path(PLEX_CONFIG_FILE),
-            {host: {'token': token}}):
+            hass.config.path(PLEX_CONFIG_FILE), {host: {
+                'token': token
+            }}):
         _LOGGER.error('failed to save config file')
 
     _LOGGER.info('Connected to: http://%s', host)
@@ -161,8 +172,8 @@ def setup_plexserver(host, token, hass, optional_config, add_devices_callback):
             _LOGGER.exception('Error listing plex devices')
             return
         except OSError:
-            _LOGGER.error(
-                'Could not connect to plex server at http://%s', host)
+            _LOGGER.error('Could not connect to plex server at http://%s',
+                          host)
             return
 
         new_plex_clients = []
@@ -172,7 +183,8 @@ def setup_plexserver(host, token, hass, optional_config, add_devices_callback):
                 continue
 
             if device.machineIdentifier not in plex_clients:
-                new_client = PlexClient(optional_config, device, None, plex_sessions, update_devices,
+                new_client = PlexClient(optional_config, device, None,
+                                        plex_sessions, update_devices,
                                         update_sessions)
                 plex_clients[device.machineIdentifier] = new_client
                 new_plex_clients.append(new_client)
@@ -183,7 +195,8 @@ def setup_plexserver(host, token, hass, optional_config, add_devices_callback):
         if optional_config[CONF_INCLUDE_NON_CLIENTS]:
             for machineIdentifier, session in plex_sessions.items():
                 if machineIdentifier not in plex_clients:
-                    new_client = PlexClient(optional_config, None, session, plex_sessions, update_devices,
+                    new_client = PlexClient(optional_config, None, session,
+                                            plex_sessions, update_devices,
                                             update_sessions)
                     plex_clients[machineIdentifier] = new_client
                     new_plex_clients.append(new_client)
@@ -208,8 +221,10 @@ def setup_plexserver(host, token, hass, optional_config, add_devices_callback):
                         active_entity_id_list.append(client.entity_id)
 
             # set groups with updated memberships
-            set_group_members(hass, GROUP_ACTIVE_DEVICES, active_entity_id_list)
-            set_group_members(hass, GROUP_INACTIVE_DEVICES, inactive_entity_id_list)
+            set_group_members(hass, GROUP_ACTIVE_DEVICES,
+                              active_entity_id_list)
+            set_group_members(hass, GROUP_INACTIVE_DEVICES,
+                              inactive_entity_id_list)
 
         if new_plex_clients:
             add_devices_callback(new_plex_clients)
@@ -227,8 +242,8 @@ def setup_plexserver(host, token, hass, optional_config, add_devices_callback):
         for session in sessions:
             plex_sessions[session.player.machineIdentifier] = session
 
-    update_devices()
     update_sessions()
+    update_devices()
 
 
 def request_configuration(host, hass, optional_config, add_devices_callback):
@@ -237,49 +252,70 @@ def request_configuration(host, hass, optional_config, add_devices_callback):
 
     # We got an error if this method is called while we are configuring
     if host in _CONFIGURING:
-        configurator.notify_errors(
-            _CONFIGURING[host], 'Failed to register, please try again.')
+        configurator.notify_errors(_CONFIGURING[host],
+                                   'Failed to register, please try again.')
 
         return
 
     def plex_configuration_callback(data):
         """The actions to do when our configuration callback is called."""
-        setup_plexserver(host, data.get('token'), hass, optional_config, add_devices_callback)
+        setup_plexserver(host,
+                         data.get('token'), hass, optional_config,
+                         add_devices_callback)
 
     _CONFIGURING[host] = configurator.request_config(
-        hass, 'Plex Media Server', plex_configuration_callback,
+        hass,
+        'Plex Media Server',
+        plex_configuration_callback,
         description=('Enter the X-Plex-Token'),
         entity_picture='/static/images/logo_plex_mediaserver.png',
         submit_caption='Confirm',
-        fields=[{'id': 'token', 'name': 'X-Plex-Token', 'type': ''}]
-    )
+        fields=[{
+            'id': 'token',
+            'name': 'X-Plex-Token',
+            'type': ''
+        }])
 
 
 class PlexClient(MediaPlayerDevice):
     """Representation of a Plex device."""
 
     # pylint: disable=attribute-defined-outside-init
-    def __init__(self, optional_config, device, session, plex_sessions, update_devices, update_sessions):
+    def __init__(self, optional_config, device, session, plex_sessions,
+                 update_devices, update_sessions):
         """Initialize the Plex device."""
         from plexapi.utils import NA
 
         self.na_type = NA
+        self._session = None
         self.optional_config = optional_config
         self.plex_sessions = plex_sessions
         self.update_devices = update_devices
         self.update_sessions = update_sessions
-        self.set_session(session)
         self.set_device(device)
+        self.set_session(session)
         self._season = None
         self._state = STATE_IDLE
-        self._volume_muted = False # since we can't retrieve remotely
-        self._volume_level = 1 # since we can't retrieve remotely
-        self._previous_volume_level = 1 # Used in fake muting
+        self._volume_muted = False  # since we can't retrieve remotely
+        self._volume_level = 1  # since we can't retrieve remotely
+        self._previous_volume_level = 1  # Used in fake muting
 
         if self.optional_config[CONF_USE_CUSTOM_ENTITY_IDS]:
             # rename the entity
-            self.entity_id = "%s.%s" % (
-                'media_player', self.machine_identifier.lower().replace('-','_'))
+            if self.machine_identifier:
+                self.entity_id = "%s.%s" % (
+                    'media_player',
+                    self.machine_identifier.lower().replace('-', '_'))
+            else:
+                if self.name:
+                    self.entity_id = "%s.%s" % (
+                        'media_player', self.name.lower().replace('-', '_'))
+
+    def dump(self, obj):
+        """DELETE ME - THIS IS FOR TROUBLESHOOTING ONLY"""
+        for attr in dir(obj):
+            if hasattr(obj, attr):
+                print("obj.%s = %s" % (attr, getattr(obj, attr)))
 
     def set_device(self, device):
         """Set the device property."""
@@ -297,8 +333,8 @@ class PlexClient(MediaPlayerDevice):
     @property
     def unique_id(self):
         """Return the id of this plex client."""
-        return '{}.{}'.format(
-            self.__class__, self.machine_identifier or self.name)
+        return '{}.{}'.format(self.__class__, self.machine_identifier or
+                              self.name)
 
     @property
     def name(self):
@@ -311,21 +347,24 @@ class PlexClient(MediaPlayerDevice):
     @property
     def machine_identifier(self):
         """Return the machine identifier of the device."""
-        machineIdentifier = None
+        device_id = None
+        player_id = None
 
         if self.device:
-            machineIdentifier = self.device.machineIdentifier
+            device_id = self._convert_na_to_none(self.device.machineIdentifier)
 
         if self.session and self.session.player:
-            machineIdentifier = self.session.player.machineIdentifier
+            player_id = self._convert_na_to_none(
+                self.session.player.machineIdentifier)
 
-        return machineIdentifier
+        return device_id or player_id
 
     @property
     def app_name(self):
         """Library name of playing media"""
         if self.session:
-            section = self.session.server.library.sectionByID(self.session.librarySectionID)
+            section = self.session.server.library.sectionByID(
+                self.session.librarySectionID)
             if section:
                 return section.title
 
@@ -333,9 +372,8 @@ class PlexClient(MediaPlayerDevice):
     def session(self):
         """Return the session, if any."""
         if self.device:
-            session = self.plex_sessions.get(self.device.machineIdentifier, None)
-            if session:
-                self._session = session
+            self._session = self.plex_sessions.get(
+                self.device.machineIdentifier, None)
 
         return self._session
 
@@ -363,7 +401,8 @@ class PlexClient(MediaPlayerDevice):
 
         if self.media_content_type is MEDIA_TYPE_TVSHOW:
             if self.session:
-                self._season = self._convert_na_to_none(self.session.parentIndex).zfill(2)
+                self._season = self._convert_na_to_none(
+                    self.session.parentIndex).zfill(2)
 
     # pylint: disable=no-self-use, singleton-comparison
     def _convert_na_to_none(self, value):
@@ -475,10 +514,13 @@ class PlexClient(MediaPlayerDevice):
             if thumb_url:
                 thumb_response = requests.get(thumb_url, verify=False)
                 if thumb_response.status_code != 200:
-                    _LOGGER.debug('Using art because thumbnail was not found: content id %s', self.media_content_id)
+                    _LOGGER.debug(
+                        'Using art because thumbnail was not found: content id %s',
+                        self.media_content_id)
                     thumb_url = self.session.server.url(self.session.art)
 
             return thumb_url
+
     @property
     def media_title(self):
         """Title of current playing media."""
@@ -539,9 +581,9 @@ class PlexClient(MediaPlayerDevice):
     def set_volume_level(self, volume):
         """Set volume level, range 0..1."""
         if self.device:
-            self.device.setVolume(int(volume * 100),
-                                  self._active_media_plexapi_type)
-            self._volume_level = volume # store since we can't retrieve
+            self.device.setVolume(
+                int(volume * 100), self._active_media_plexapi_type)
+            self._volume_level = volume  # store since we can't retrieve
 
     @property
     def volume_level(self):
@@ -631,15 +673,19 @@ class PlexClient(MediaPlayerDevice):
         if self.device:
             import plexapi.playqueue
             server_url = media.server.baseurl.split(':')
-            playqueue = plexapi.playqueue.PlayQueue.create(
-                self.device.server, media, **params)
+            playqueue = plexapi.playqueue.PlayQueue.create(self.device.server,
+                                                           media, **params)
             self.device.sendCommand('playback/playMedia', **dict({
-                'machineIdentifier': self.device.server.machineIdentifier,
-                'address': server_url[1].strip('/'),
-                'port': server_url[-1],
-                'key': media.key,
-                'containerKey': '/playQueues/%s?window=100&own=1' %
-                                playqueue.playQueueID,
+                'machineIdentifier':
+                self.device.server.machineIdentifier,
+                'address':
+                server_url[1].strip('/'),
+                'port':
+                server_url[-1],
+                'key':
+                media.key,
+                'containerKey':
+                '/playQueues/%s?window=100&own=1' % playqueue.playQueueID,
             }, **params))
         else:
             _LOGGER.error('Streamer cannot play media: %s', self.entity_id)
