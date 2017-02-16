@@ -121,6 +121,8 @@ This component supports the following optional platform configurations (which al
 ## Compatibility
 Here's what I've tested it with so far:
 * NVidia Shield
+	* as client
+	* as Plex Media Server
 * PlexConnected Apple TV 3
 * Plex Web Safari
 * Plex Web Chrome
@@ -136,9 +138,9 @@ Here's what I've tested it with so far:
   * Playing music is not visible (likely because it plays as background music)
   * Playing a season only shows first episode
 * NVidia Shield
+	*  playback control is disabled when the client and server are local to the same device (as the plex api/server errors).  Playback control is enabled when the client is remote.
 	*  freezes with PlayMedia Music or Playlist (might just be my Shield)
 	* only supports volumes 2-100.  So setting a volume lower than 2 or trying to mute will not work.
-	* does not work when configuring this component to use the plex server running on the Shield
 
 ## Usage
 

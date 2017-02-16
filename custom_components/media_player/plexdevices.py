@@ -311,12 +311,6 @@ class PlexClient(MediaPlayerDevice):
                     self.entity_id = "%s.%s" % (
                         'media_player', self.name.lower().replace('-', '_'))
 
-    def dump(self, obj):
-        """DELETE ME - THIS IS FOR TROUBLESHOOTING ONLY"""
-        for attr in dir(obj):
-            if hasattr(obj, attr):
-                print("obj.%s = %s" % (attr, getattr(obj, attr)))
-
     def set_device(self, device):
         """Set the device property."""
         self.device = device
@@ -500,24 +494,21 @@ class PlexClient(MediaPlayerDevice):
     def media_image_url(self):
         """Image url of current playing media."""
         if self.session:
-            thumb_url = self._convert_na_to_none(self.session.thumbUrl)
+            thumb_url = self._convert_na_to_none(self.session.thumb)
             if self.media_content_type is MEDIA_TYPE_TVSHOW:
-                if self.optional_config[CONF_USE_EPISODE_ART]:
-                    thumb_url = self.session.server.url(self.session.thumb)
-
-            if str(self.na_type) in thumb_url:
-                # Audio tracks build their thumb urls internally before passing
-                # back a URL with the PlexAPI _NA type already converted to a
-                # string and embedded into a malformed URL
-                thumb_url = None
+                if not self.optional_config[CONF_USE_EPISODE_ART]:
+                    thumb_url = self._convert_na_to_none(
+                        self.session.grandparentThumb)
 
             if thumb_url:
+                thumb_url = self.session.server.url(thumb_url)
                 thumb_response = requests.get(thumb_url, verify=False)
                 if thumb_response.status_code != 200:
                     _LOGGER.debug(
                         'Using art because thumbnail was not found: content id %s',
                         self.media_content_id)
-                    thumb_url = self.session.server.url(self.session.art)
+                    thumb_url = self.session.server.url(
+                        self._convert_na_to_none(self.session.art))
 
             return thumb_url
 
@@ -571,10 +562,16 @@ class PlexClient(MediaPlayerDevice):
 
             features = features
             if self.make == "SHIELD Android TV":
-                #No mute since device only supports volume 2-100
+                #No mute since Shield only supports volume 2-100
                 features = features
             else:
                 features = features | SUPPORT_VOLUME_MUTE
+
+        # Disable controls if player is local (127.0.0.1)
+        # Like when running client and server on a single Nvidia shield
+        if self.session and self.session.player:
+            if "127.0.0.1" in self._convert_na_to_none(self.device.baseurl):
+                features = None
 
         return features
 
