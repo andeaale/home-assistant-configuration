@@ -314,7 +314,6 @@ class PlexClient(MediaPlayerDevice):
     def set_device(self, device):
         """Set the device property."""
         self.device = device
-        self._session = None
 
     def set_session(self, session):
         """Set the session property."""
@@ -554,26 +553,31 @@ class PlexClient(MediaPlayerDevice):
             return self._convert_na_to_none(self.session.player.device)
 
     @property
+    def local(self):
+        """Returns true if the client is local (127.0.0.1)."""
+        if self.device:
+            if self._convert_na_to_none(self.device.baseurl):
+                if "127.0.0.1" in self.device.baseurl:
+                    return True
+
+        return False
+
+    @property
     def supported_features(self):
         """Flag media player features that are supported."""
-        features = None
-        if self.device:
-            features = SUPPORT_PLEX
-
-            features = features
-            if self.make == "SHIELD Android TV":
-                #No mute since Shield only supports volume 2-100
-                features = features
-            else:
-                features = features | SUPPORT_VOLUME_MUTE
 
         # Disable controls if player is local (127.0.0.1)
         # Like when running client and server on a single Nvidia shield
-        if self.session and self.session.player:
-            if "127.0.0.1" in self._convert_na_to_none(self.device.baseurl):
-                features = None
-
-        return features
+        # or when casting to an Nvidia shield running a plex server
+        if self.local:
+            return None
+        #No mute since Shield only supports volume 2-100
+        elif self.make == "SHIELD Android TV":
+            return SUPPORT_PLEX
+        elif self.device:
+            return SUPPORT_PLEX | SUPPORT_VOLUME_MUTE
+        else:
+            return None
 
     def set_volume_level(self, volume):
         """Set volume level, range 0..1."""

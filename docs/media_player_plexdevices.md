@@ -138,9 +138,11 @@ Here's what I've tested it with so far:
   * Playing music is not visible (likely because it plays as background music)
   * Playing a season only shows first episode
 * NVidia Shield
-	*  playback control is disabled when the client and server are local to the same device (as the plex api/server errors).  Playback control is enabled when the client is remote.
+	*  playback controls are disabled under any of the following conditions:
+		* the client and server are local to the same device
+		* you remotely cast to a shield running as a plex server
 	*  freezes with PlayMedia Music or Playlist (might just be my Shield)
-	* only supports volumes 2-100.  So setting a volume lower than 2 or trying to mute will not work.
+	* only supports volumes 2-100.  So setting a volume lower than 2 or trying to mute will not work (and log errors).
 
 ## Usage
 
