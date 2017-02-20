@@ -5,26 +5,41 @@ homeassistant:
   customize:
   #----------------------------------------------------------------
 
-    media_player.living_room_apple_tv:
+    media_player.plex_dy4hdna2drhn:
       icon: mdi:plex
       friendly_name: Living Room (Apple TV)
 
-    # media_player.jesses_iphone_7_plus:
-    media_player.7b8c4c63_38ff_417d_ac14_0457796ee1c1:
+    media_player.plex_c0kfc142ddr5:
+      icon: mdi:plex
+      friendly_name: Kitchen (Apple TV)
+
+    media_player.plex_7b8c4c63_38ff_417d_ac14_0457796ee1c1:
       icon: mdi:plex
       friendly_name: Jesse (iPhone)
 
-    #media_player.shield_android_tv:
-    media_player.bb72ed6a42aa26ea_com_plexapp_android:
+    media_player.plex_bb72ed6a42aa26ea_com_plexapp_android:
       icon: mdi:plex
       friendly_name: Theater (Shield)
 
-    #media_player.plex_for_tivo_tivo_tcda92000:
-    media_player.wkx1npeb5oe:
+    # TiVo TCD848000
+    media_player.plex_mwmj7d2er7m34n29:
       icon: mdi:plex
-      friendly_name: Tivo Mini
+      friendly_name: Theater (Tivo)
 
-    media_player.roku_3__4e757u072189:
+    media_player.plex_e0jqqsjh1g1:
+      icon: mdi:plex
+      friendly_name: Living Room (Tivo)
+
+    media_player.plex_wkx1npeb5oe:
+      icon: mdi:plex
+      friendly_name: Master Bedroom (Tivo)
+
+    media_player.plex_c0hjm0x4drhn:
+      icon: mdi:plex
+      friendly_name: Master Bedroom (Apple TV)
+
+    #media_player.roku_3__4e757u072189:
+    media_player.plex_a71ac5a0652e6d9bfc21f7da5b03f1ca:
       icon: mdi:plex
       friendly_name: Bogar (House)
 

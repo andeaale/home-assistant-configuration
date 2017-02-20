@@ -9,8 +9,8 @@ import logging
 import voluptuous as vol
 
 from homeassistant.components.switch import PLATFORM_SCHEMA
-from homeassistant.const import (
-    CONF_NAME, CONF_USERNAME, CONF_PASSWORD, CONF_HOST, CONF_PORT)
+from homeassistant.const import (CONF_NAME, CONF_USERNAME, CONF_PASSWORD,
+                                 CONF_HOST, CONF_PORT)
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
 import homeassistant.helpers.config_validation as cv
@@ -28,12 +28,18 @@ DEFAULT_PORT = 32400
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=1)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Optional(CONF_HOST, default=DEFAULT_HOST): cv.string,
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    vol.Optional(CONF_PASSWORD): cv.string,
-    vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.port,
-    vol.Optional(CONF_SERVER): cv.string,
-    vol.Optional(CONF_USERNAME): cv.string,
+    vol.Optional(CONF_HOST, default=DEFAULT_HOST):
+    cv.string,
+    vol.Optional(CONF_NAME, default=DEFAULT_NAME):
+    cv.string,
+    vol.Optional(CONF_PASSWORD):
+    cv.string,
+    vol.Optional(CONF_PORT, default=DEFAULT_PORT):
+    cv.port,
+    vol.Optional(CONF_SERVER):
+    cv.string,
+    vol.Optional(CONF_USERNAME):
+    cv.string,
 })
 
 
@@ -48,8 +54,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     plex_port = config.get(CONF_PORT)
     plex_url = 'http://{}:{}'.format(plex_host, plex_port)
 
-    add_devices([PlexSensor(
-        name, plex_url, plex_user, plex_password, plex_server)])
+    add_devices(
+        [PlexSensor(name, plex_url, plex_user, plex_password, plex_server)])
 
 
 class PlexSensor(Entity):
@@ -101,11 +107,6 @@ class PlexSensor(Entity):
         sessions = self._server.sessions()
         now_playing = []
         for sess in sessions:
-            # user = sess.username if sess.username is not self._na_type else ""
-            # # use player name if username is blank
-            # if user == "":
-            #     user = sess.player.title if sess.player.title is not self._na_type else ""
-
             # use player name instead of username
             user = sess.player.title if sess.player.title is not self._na_type else ""
 
@@ -114,11 +115,15 @@ class PlexSensor(Entity):
             # format TV differently from movies
             if sess.type == 'episode':
                 show = sess.grandparentTitle if sess.grandparentTitle is not self._na_type else ""
-                season = sess.seasonNumber.zfill(2) if sess.seasonNumber is not self._na_type else ""
-                episode = sess.index.zfill(2) if sess.index is not self._na_type else ""
-                now_playing.append((user, "{0} S{1}E{2} - {3}".format(show, season, episode, title)))
+                season = sess.seasonNumber.zfill(
+                    2) if sess.seasonNumber is not self._na_type else ""
+                episode = sess.index.zfill(
+                    2) if sess.index is not self._na_type else ""
+                now_playing.append((user, "{0} S{1}E{2} - {3}".format(
+                    show, season, episode, title)))
             else:
                 year = sess.year if sess.year is not self._na_type else ""
                 now_playing.append((user, "{0} ({1})".format(title, year)))
+
         self._state = len(sessions)
         self._now_playing = now_playing
