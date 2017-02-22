@@ -2,16 +2,33 @@
 # Automations with motion sensors
 #----------------------------------------------------------------
 
+script:
+#----------------------------------------------------------------
+  # Use this whenever turning off mudroom lights through automation
+  # Avoids false positive camera motion when lights turn off
+  auto_off_mudroom_light:
+    sequence:
+      - service: automation.turn_off
+        entity_id: automation.auto_motion_mudroom_light
+      - service: light.turn_off
+        entity_id: light.mudroom_entrance_lights_level_35_0
+      - delay: 00:00:15
+      - service: sensor.turn_off
+        entity_id: sensor.motion_indoor_camera_playroom
+      - service: automation.turn_on
+        entity_id: automation.auto_motion_mudroom_light
+
 automation:
 #----------------------------------------------------------------
 
-  # Turns light on when motion detected - keeps light on while motion detected
-  # within 90 seconds
+  # Motion activated mudroom light (on and off)
   - alias: AUTO (Motion) Mudroom Light
     trigger:
+      # Triggers to turn on light as soon as there is motion
       - platform: state
         entity_id: sensor.motion_indoor_camera_playroom
         to: 'On'
+      # Triggers to turn off light when there has been no motion for 90 seconds
       - platform: state
         entity_id: sensor.motion_indoor_camera_playroom
         to: 'Off'
@@ -19,13 +36,15 @@ automation:
           minutes: 1
           seconds: 30
     action:
-      service_template: >
-        {% if trigger.to_state.state == "On" %}
-          homeassistant.turn_on
-        {% elif trigger.to_state.state == "Off" %}
-          homeassistant.turn_off
-        {% endif %}
-      entity_id: light.mudroom_entrance_lights_level_35_0
+      # Only if auto lights option is on
+      service: homeassistant.turn_on
+      data_template:
+        entity_id: >
+          {% if trigger.to_state.state == "On" and states.input_boolean.options_lights_auto_on.state == "on" %}
+            light.mudroom_entrance_lights_level_35_0
+          {% elif trigger.to_state.state == "Off" and states.input_boolean.options_lights_auto_off.state == "on"  %}
+            script.auto_off_mudroom_light
+          {% endif %}
 
   # Turn on light when motion detected
   # Brightness varies based on time of day (i.e. low when late at night)

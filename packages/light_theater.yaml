@@ -78,5 +78,6 @@ automation:
           minutes: 15
     action:
       - service: switch.turn_off
-        data_template:
-          entity_id: "{{ trigger.event.data.entity_id }}"
+        entity_id:
+          - switch.theater_posters_switch_22_0
+          - switch.theater_candy_lights_switch_25_0
