@@ -75,6 +75,9 @@ group:
     view: yes
     icon: mdi:movie
     entities:
+      - media_player.living_room_plex
+      - media_player.kitchen_plex
+      - media_player.ryans_bedroom_plex
       - group._plex_devices_active
       - group._plex_devices_inactive
 

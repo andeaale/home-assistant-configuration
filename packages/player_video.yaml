@@ -5,43 +5,75 @@ homeassistant:
   customize:
   #----------------------------------------------------------------
 
+    # RYAN
+    #----------------------------------------------------------------
+    media_player.plex_c07j5lf3drhn:
+      icon: mdi:plex
+      friendly_name: Ryans Bedroom (Apple TV)
+      hidden: true
+
+    media_player.ryans_bedroom_apple_tv:
+      hidden: true
+
+    # LIVING ROOM
+    #----------------------------------------------------------------
+    media_player.living_room_apple_tv:
+      hidden: true
+
     media_player.plex_dy4hdna2drhn:
       icon: mdi:plex
       friendly_name: Living Room (Apple TV)
-
-    media_player.plex_c0kfc142ddr5:
-      icon: mdi:plex
-      friendly_name: Kitchen (Apple TV)
-
-    media_player.plex_7b8c4c63_38ff_417d_ac14_0457796ee1c1:
-      icon: mdi:plex
-      friendly_name: Jesse (iPhone)
-
-    media_player.plex_bb72ed6a42aa26ea_com_plexapp_android:
-      icon: mdi:plex
-      friendly_name: Theater (Shield)
-
-    # TiVo TCD848000
-    media_player.plex_mwmj7d2er7m34n29:
-      icon: mdi:plex
-      friendly_name: Theater (Tivo)
+      hidden: true
 
     media_player.plex_e0jqqsjh1g1:
       icon: mdi:plex
       friendly_name: Living Room (Tivo)
 
-    media_player.plex_wkx1npeb5oe:
+    # KITCHEN
+    #----------------------------------------------------------------
+    media_player.kitchen_apple_tv:
+      hidden: true
+
+    media_player.plex_c0kfc142ddr5:
       icon: mdi:plex
-      friendly_name: Master Bedroom (Tivo)
+      friendly_name: Kitchen (Apple TV)
+      hidden: true
+
+    # MASTER BEDROOM
+    #----------------------------------------------------------------
+    media_player.master_bedroom_apple_tv:
+      hidden: true
 
     media_player.plex_c0hjm0x4drhn:
       icon: mdi:plex
       friendly_name: Master Bedroom (Apple TV)
+      hidden: true
 
-    #media_player.roku_3__4e757u072189:
+    media_player.plex_wkx1npeb5oe:
+      icon: mdi:plex
+      friendly_name: Master Bedroom (Tivo)
+
+    # THEATER
+    #----------------------------------------------------------------
+    media_player.plex_bb72ed6a42aa26ea_com_plexapp_android:
+      icon: mdi:plex
+      friendly_name: Theater (Shield)
+
+    media_player.plex_mwmj7d2er7m34n29:
+      icon: mdi:plex
+      friendly_name: Theater (Tivo)
+
+    # MOBILE
+    #----------------------------------------------------------------
+    media_player.plex_7b8c4c63_38ff_417d_ac14_0457796ee1c1:
+      icon: mdi:plex
+      friendly_name: Jesse (iPhone)
+
+    # OTHER
+    #----------------------------------------------------------------
     media_player.plex_a71ac5a0652e6d9bfc21f7da5b03f1ca:
       icon: mdi:plex
-      friendly_name: Bogar (House)
+      friendly_name: !secret plex_other1_friendly_name
 
 sensor:
 #----------------------------------------------------------------
@@ -68,3 +100,154 @@ media_player:
     scan_interval: 5
     max_frozen_playing: 15
     max_frozen_paused: 30
+
+  # APPLE TV'S
+  #----------------------------------------------------------------
+
+  - platform: apple_tv
+    name: Living Room Apple TV
+    host: !secret appletv_living_room_host
+    login_id: !secret appletv_login_id
+
+  - platform: apple_tv
+    name: Master Bedroom Apple TV
+    host: !secret appletv_master_bedroom_host
+    login_id: !secret appletv_login_id
+
+  - platform: apple_tv
+    name: Office Apple TV
+    host: !secret appletv_office_host
+    login_id: !secret appletv_login_id
+
+  - platform: apple_tv
+    name: Kitchen Apple TV
+    host: !secret appletv_kitchen_host
+    login_id: !secret appletv_login_id
+
+  - platform: apple_tv
+    name: Ryans Bedroom Apple TV
+    host: !secret appletv_ryans_bedroom_host
+    login_id: !secret appletv_login_id
+
+  # UNIVERSAL PLAYERS
+  #----------------------------------------------------------------
+  # Modified component to get its attributes from the second child
+  # while maintaining control from the first child.  This is needed
+  # for PlexConnect Apple TV's where the Apple TV component controls
+  # playback and the Plex component shows all the attributes.
+
+  - platform: universal
+    name: Ryans Bedroom (Plex)
+    children:
+      - media_player.ryans_bedroom_apple_tv
+      - media_player.plex_c07j5lf3drhn
+    attributes:
+      state: media_player.plex_c07j5lf3drhn
+      is_volume_muted: media_player.plex_c07j5lf3drhn|volume_muted
+      volume_level: media_player.plex_c07j5lf3drhn|volume_level
+      source: media_player.plex_c07j5lf3drhn|source
+      source_list: media_player.plex_c07j5lf3drhn|source_list
+      entity_picture: media_player.plex_c07j5lf3drhn|entity_picture
+      media_season: media_player.plex_c07j5lf3drhn|media_season
+      media_episode: media_player.plex_c07j5lf3drhn|media_episode
+      media_content_type: media_player.plex_c07j5lf3drhn|media_content_type
+      media_series_title: media_player.plex_c07j5lf3drhn|media_series_title
+      media_title: media_player.plex_c07j5lf3drhn|media_title
+      media_artist: media_player.plex_c07j5lf3drhn|media_artist
+      media_album_name: media_player.plex_c07j5lf3drhn|media_album_name
+      media_album_artist: media_player.plex_c07j5lf3drhn|media_album_artist
+      media_track: media_player.plex_c07j5lf3drhn|media_track
+      media_channel: media_player.plex_c07j5lf3drhn|media_channel
+      media_playlist: media_player.plex_c07j5lf3drhn|media_playlist
+      app_id: media_player.plex_c07j5lf3drhn|app_id
+      app_name: media_player.plex_c07j5lf3drhn|app_name
+      media_position: media_player.plex_c07j5lf3drhn|media_position
+      media_duration: media_player.plex_c07j5lf3drhn|media_duration
+      media_position_updated_at: media_player.plex_c07j5lf3drhn|media_position_updated_at
+
+  - platform: universal
+    name: Master Bedroom (Plex)
+    children:
+      - media_player.master_bedroom_apple_tv
+      - media_player.plex_c0hjm0x4drhn
+    attributes:
+      state: media_player.plex_c0hjm0x4drhn
+      is_volume_muted: media_player.plex_c0hjm0x4drhn|volume_muted
+      volume_level: media_player.plex_c0hjm0x4drhn|volume_level
+      source: media_player.plex_c0hjm0x4drhn|source
+      source_list: media_player.plex_c0hjm0x4drhn|source_list
+      entity_picture: media_player.plex_c0hjm0x4drhn|entity_picture
+      media_season: media_player.plex_c0hjm0x4drhn|media_season
+      media_episode: media_player.plex_c0hjm0x4drhn|media_episode
+      media_content_type: media_player.plex_c0hjm0x4drhn|media_content_type
+      media_series_title: media_player.plex_c0hjm0x4drhn|media_series_title
+      media_title: media_player.plex_c0hjm0x4drhn|media_title
+      media_artist: media_player.plex_c0hjm0x4drhn|media_artist
+      media_album_name: media_player.plex_c0hjm0x4drhn|media_album_name
+      media_album_artist: media_player.plex_c0hjm0x4drhn|media_album_artist
+      media_track: media_player.plex_c0hjm0x4drhn|media_track
+      media_channel: media_player.plex_c0hjm0x4drhn|media_channel
+      media_playlist: media_player.plex_c0hjm0x4drhn|media_playlist
+      app_id: media_player.plex_c0hjm0x4drhn|app_id
+      app_name: media_player.plex_c0hjm0x4drhn|app_name
+      media_position: media_player.plex_c0hjm0x4drhn|media_position
+      media_duration: media_player.plex_c0hjm0x4drhn|media_duration
+      media_position_updated_at: media_player.plex_c0hjm0x4drhn|media_position_updated_at
+
+  - platform: universal
+    name: Kitchen (Plex)
+    children:
+      - media_player.kitchen_apple_tv
+      - media_player.plex_c0kfc142ddr5
+    attributes:
+      state: media_player.plex_c0kfc142ddr5
+      is_volume_muted: media_player.plex_c0kfc142ddr5|volume_muted
+      volume_level: media_player.plex_c0kfc142ddr5|volume_level
+      source: media_player.plex_c0kfc142ddr5|source
+      source_list: media_player.plex_c0kfc142ddr5|source_list
+      entity_picture: media_player.plex_c0kfc142ddr5|entity_picture
+      media_season: media_player.plex_c0kfc142ddr5|media_season
+      media_episode: media_player.plex_c0kfc142ddr5|media_episode
+      media_content_type: media_player.plex_c0kfc142ddr5|media_content_type
+      media_series_title: media_player.plex_c0kfc142ddr5|media_series_title
+      media_title: media_player.plex_c0kfc142ddr5|media_title
+      media_artist: media_player.plex_c0kfc142ddr5|media_artist
+      media_album_name: media_player.plex_c0kfc142ddr5|media_album_name
+      media_album_artist: media_player.plex_c0kfc142ddr5|media_album_artist
+      media_track: media_player.plex_c0kfc142ddr5|media_track
+      media_channel: media_player.plex_c0kfc142ddr5|media_channel
+      media_playlist: media_player.plex_c0kfc142ddr5|media_playlist
+      app_id: media_player.plex_c0kfc142ddr5|app_id
+      app_name: media_player.plex_c0kfc142ddr5|app_name
+      media_position: media_player.plex_c0kfc142ddr5|media_position
+      media_duration: media_player.plex_c0kfc142ddr5|media_duration
+      media_position_updated_at: media_player.plex_c0kfc142ddr5|media_position_updated_at
+
+  - platform: universal
+    name: Living Room (Plex)
+    children:
+      - media_player.living_room_apple_tv
+      - media_player.plex_dy4hdna2drhn
+    attributes:
+      state: media_player.plex_dy4hdna2drhn
+      is_volume_muted: media_player.plex_dy4hdna2drhn|volume_muted
+      volume_level: media_player.plex_dy4hdna2drhn|volume_level
+      source: media_player.plex_dy4hdna2drhn|source
+      source_list: media_player.plex_dy4hdna2drhn|source_list
+      entity_picture: media_player.plex_dy4hdna2drhn|entity_picture
+      media_season: media_player.plex_dy4hdna2drhn|media_season
+      media_episode: media_player.plex_dy4hdna2drhn|media_episode
+      media_content_type: media_player.plex_dy4hdna2drhn|media_content_type
+      media_series_title: media_player.plex_dy4hdna2drhn|media_series_title
+      media_title: media_player.plex_dy4hdna2drhn|media_title
+      media_artist: media_player.plex_dy4hdna2drhn|media_artist
+      media_album_name: media_player.plex_dy4hdna2drhn|media_album_name
+      media_album_artist: media_player.plex_dy4hdna2drhn|media_album_artist
+      media_track: media_player.plex_dy4hdna2drhn|media_track
+      media_channel: media_player.plex_dy4hdna2drhn|media_channel
+      media_playlist: media_player.plex_dy4hdna2drhn|media_playlist
+      app_id: media_player.plex_dy4hdna2drhn|app_id
+      app_name: media_player.plex_dy4hdna2drhn|app_name
+      media_position: media_player.plex_dy4hdna2drhn|media_position
+      media_duration: media_player.plex_dy4hdna2drhn|media_duration
+      media_position_updated_at: media_player.plex_dy4hdna2drhn|media_position_updated_at
