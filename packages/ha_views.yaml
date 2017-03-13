@@ -19,6 +19,7 @@ group:
     entities:
     - switch.garage_door_opener
     - camera.garage
+    - camera.front_door
 
   lights_view:
     name: Lights
@@ -79,7 +80,7 @@ group:
       - media_player.kitchen_plex
       - media_player.ryans_bedroom_plex
       - group._plex_devices_active
-      - group._plex_devices_inactive
+      # - group._plex_devices_inactive
 
   scenes_view:
     name: Scenes

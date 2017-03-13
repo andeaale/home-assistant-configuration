@@ -47,6 +47,9 @@ group:
 
   cameras_group1:
     - camera.garage
+    - camera.front_door
+    - camera.driveway_front
+    - camera.driveway_rear
     - camera.living_room
     - camera.playroom
 
@@ -93,3 +96,15 @@ camera:
   - platform: mjpeg
     name: Theater
     mjpeg_url: !secret camera_theater_url
+
+  - platform: mjpeg
+    name: Front Door
+    mjpeg_url: !secret camera_front_door_url
+
+  - platform: mjpeg
+    name: Driveway (Front)
+    mjpeg_url: !secret camera_driveway_front_url
+
+  - platform: mjpeg
+    name: Driveway (Rear)
+    mjpeg_url: !secret camera_driveway_rear_url

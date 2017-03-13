@@ -5,6 +5,12 @@ homeassistant:
   customize:
   #----------------------------------------------------------------
 
+    # BIANCA
+    #----------------------------------------------------------------
+    media_player.plex_4148506b_06df_4827_a8bd_6e6fb5b34624:
+      icon: mdi:plex
+      friendly_name: Bianca (iPhone)
+
     # RYAN
     #----------------------------------------------------------------
     media_player.plex_c07j5lf3drhn:
@@ -94,7 +100,6 @@ media_player:
     entity_namespace: 'plex'
     include_non_clients: true
     use_episode_art: true
-    use_dynamic_groups: true
     use_custom_entity_ids: true
     show_all_controls: false
     scan_interval: 5
