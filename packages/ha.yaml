@@ -28,21 +28,20 @@ automation:
           message: "Home Assistant Started"
           title: ""
 
-  # Delay automations that trigger on restart; i.e. presence-detection
-  - alias: delay on restart
+  # Certain automations trigger false positives on HA restart.
+  # For example, an automation that alerts on door open or close will
+  # alert on HA restart because it goes from state unknown to state closed.
+  # Solution is to set those automations with an initial state of off
+  # and have this automation enable them on HA restart
+  - alias: TURN ON (START) Home Assistant
     hide_entity: True
     trigger:
       platform: event
       event_type: homeassistant_start
 
     action:
-      - service: automation.turn_off
-        entity_id: automation.notify_open_close_door
-      - service: automation.turn_off
-        entity_id: automation.notify_home_resident
-
       - delay:
-          minutes: 1
+          minutes: 1 # give the sensors a chance to get the correct states
 
       - service: automation.turn_on
         entity_id: automation.notify_open_close_door

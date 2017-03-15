@@ -309,7 +309,7 @@ automation:
       platform: state
       entity_id: input_select.living_room_scenes
     action:
-      service: scene.turn_on
+      service: homeassistant.turn_on
       data_template:
         entity_id: >
           {% if is_state("input_select.living_room_scenes", "Off") %}
@@ -336,7 +336,7 @@ automation:
       platform: state
       entity_id: input_select.theater_scenes
     action:
-      service: scene.turn_on
+      service: homeassistant.turn_on
       data_template:
         entity_id: >
           {% if is_state("input_select.theater_scenes", "Off") %}
@@ -371,7 +371,7 @@ automation:
           - thu
           - fri
     action:
-      - service: scene.turn_on
+      - service: homeassistant.turn_on
         entity_id: scene.school_morning_on
 
   - alias: School Day Turn off lights weekday 8:20AM
@@ -390,7 +390,7 @@ automation:
           - thu
           - fri
     action:
-      - service: scene.turn_on
+      - service: homeassistant.turn_on
         entity_id: scene.school_morning_off
 
   # Turn off downstairs bathroom lights after 15 minutes
@@ -412,7 +412,7 @@ automation:
         state: 'on'
 
     action:
-      - service: scene.turn_on
+      - service: homeassistant.turn_on
         entity_id: scene.downstairs_bathroom_off
 
   # Turn off attic light after 15 minutes

@@ -63,3 +63,12 @@ tts:
     cache: true
     cache_dir: /tmp/tts
     time_memory: 300
+
+group: !include groups.yaml
+
+zwave:
+  usb_path: /dev/ttyUSB-ZStick-5G
+  polling_interval: 2000
+  autoheal: true
+  config_path: /srv/hass/src/python-openzwave/openzwave/config
+  device_config: !include zwave_device_config.yaml

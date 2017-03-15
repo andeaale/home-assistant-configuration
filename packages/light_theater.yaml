@@ -13,7 +13,7 @@ script:
       - service: light.turn_off
         entity_id: light.theater_lights_level_23_0
       - delay: 00:00:15
-      - service: sensor.turn_off
+      - service: homeassistant.turn_off
         entity_id: sensor.motion_indoor_camera_theater
       - service: automation.turn_on
         entity_id: automation.auto_motion_theater_light

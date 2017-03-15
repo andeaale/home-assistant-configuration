@@ -18,6 +18,7 @@ group:
     icon: mdi:remote
     entities:
     - switch.garage_door_opener
+    - sensor.last_ring
     - camera.garage
     - camera.front_door
 

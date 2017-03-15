@@ -7,4 +7,4 @@ remote:
   - platform: harmony
     name: HarmonyHub-LivingRoom
     host:  !secret remote_harmony_living_room_host
-    scan_interval: 1
+    scan_interval: 2

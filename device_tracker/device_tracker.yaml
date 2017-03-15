@@ -4,6 +4,7 @@
   port: !secret device_tracker_wifi_ubiquiti_port
   username: !secret device_tracker_wifi_ubiquiti_username
   password: !secret device_tracker_wifi_ubiquiti_password
+  verify_ssl: False  
   site_id: default
   track_new_devices: no
   interval_seconds: 2

@@ -13,7 +13,7 @@ script:
       - service: light.turn_off
         entity_id: light.mudroom_entrance_lights_level_35_0
       - delay: 00:00:15
-      - service: sensor.turn_off
+      - service: homeassistant.turn_off
         entity_id: sensor.motion_indoor_camera_playroom
       - service: automation.turn_on
         entity_id: automation.auto_motion_mudroom_light
@@ -55,7 +55,7 @@ automation:
       from: '0'
       to: '8'
     action:
-      service: scene.turn_on
+      service: homeassistant.turn_on
       data_template:
         entity_id: >
           {% set hour=states("sensor.time").split(':')[0] | int %}

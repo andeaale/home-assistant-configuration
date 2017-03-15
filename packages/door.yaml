@@ -2,6 +2,14 @@
 # Items common across all doors
 #----------------------------------------------------------------
 
+homeassistant:
+  customize:
+  #----------------------------------------------------------------
+
+    sensor.last_ring:
+      icon: mdi:bell-ring
+      friendly_name: Last Ring
+
 automation:
 #----------------------------------------------------------------
 
@@ -10,6 +18,7 @@ automation:
 
   # Alert when doors open and close
   - alias: NOTIFY (OPEN CLOSE) Door
+    initial_state: False # start disabled to avoid false positives on HA restart
     hide_entity: True
     trigger:
       - platform: state
@@ -35,6 +44,32 @@ automation:
 
 sensor:
 #----------------------------------------------------------------
+
+  # door bell
+  - platform: ring
+    username: !secret ring_username
+    password: !secret ring_password
+    monitored_conditions:
+      - battery
+      - last_activity
+      - volume
+
+  # last door bell activity
+  - platform: template
+    sensors:
+      last_ring:
+        friendly_name: Last Ring
+        value_template: >
+          {% set category = states.sensor.ring_front_door_last_activity.attributes.category.replace('ding','ring').title() %}
+          {% set activity_date = states.sensor.ring_front_door_last_activity.attributes.created_at.strftime('%m/%d/%y') %}
+          {% set activity_time = states.sensor.ring_front_door_last_activity.attributes.created_at.strftime('%I:%M %p').lstrip('0') %}
+
+          {% if now().strftime('%m/%d/%y')==activity_date %}
+          {%   set activity_date = 'Today' %}
+          {% endif %}
+
+          {% set activity = activity_date + ' ' + activity_time + ' (' + category + ')' %}
+          {{ activity }}
 
   # Summary
   - platform: template

@@ -7,7 +7,7 @@ remote:
   - platform: harmony
     name: HarmonyHub-Theater
     host:  !secret remote_harmony_theater_host
-    scan_interval: 1
+    scan_interval: 2
 
 automation:
 #----------------------------------------------------------------

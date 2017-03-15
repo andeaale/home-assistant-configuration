@@ -98,6 +98,7 @@ automation:
 
   # Send a notification when key residents arrive
   - alias: NOTIFY (HOME) Resident
+    initial_state: False # start disabled to avoid false positives on HA restart  
     hide_entity: True
     trigger:
       - platform: state
