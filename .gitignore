@@ -4,6 +4,8 @@
 *.csr
 *.db
 *.db-journal
+*.db-shm
+*.db-wal
 *.key
 *.log
 *.pid

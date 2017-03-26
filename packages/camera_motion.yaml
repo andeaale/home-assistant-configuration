@@ -4,6 +4,15 @@
 
 group:
 #----------------------------------------------------------------
+  motion_outdoor_camera_all:
+    name: Motion Outdoor (Camera)
+    view: no
+    icon: mdi:camcorder
+    entities:
+    - sensor.motion_outdoor_camera_driveway_front
+    - sensor.motion_outdoor_camera_driveway_rear
+    - sensor.motion_outdoor_camera_front_door
+
   motion_indoor_camera_all:
     name: Motion Indoor (Camera)
     view: no
@@ -145,6 +154,57 @@ sensor:
             Off
           {% endif %}
 
+  - platform: template
+    sensors:
+      motion_outdoor_camera_driveway_rear:
+        friendly_name: 'Driveway Rear'
+        value_template: >-
+          {% if states.binary_sensor.blueiris_driveway_rear.state %}
+            {% if is_state('binary_sensor.blueiris_driveway_rear', 'on') %}
+              On
+            {% elif is_state('binary_sensor.blueiris_driveway_rear', 'off') %}
+              Off
+            {% else %}
+              {{ states('binary_sensor.blueiris_driveway_rear') }}
+            {% endif %}
+          {% else %}
+            Off
+          {% endif %}
+
+  - platform: template
+    sensors:
+      motion_outdoor_camera_driveway_front:
+        friendly_name: 'Driveway Front'
+        value_template: >-
+          {% if states.binary_sensor.blueiris_driveway_front.state %}
+            {% if is_state('binary_sensor.blueiris_driveway_front', 'on') %}
+              On
+            {% elif is_state('binary_sensor.blueiris_driveway_front', 'off') %}
+              Off
+            {% else %}
+              {{ states('binary_sensor.blueiris_driveway_front') }}
+            {% endif %}
+          {% else %}
+            Off
+          {% endif %}
+
+  - platform: template
+    sensors:
+      motion_outdoor_camera_front_door:
+        friendly_name: 'Front Door'
+        value_template: >-
+          {% if states.binary_sensor.blueiris_front_door.state %}
+            {% if is_state('binary_sensor.blueiris_front_door', 'on') %}
+              On
+            {% elif is_state('binary_sensor.blueiris_front_door', 'off') %}
+              Off
+            {% else %}
+              {{ states('binary_sensor.blueiris_front_door') }}
+            {% endif %}
+          {% else %}
+            Off
+          {% endif %}
+
   # SUMMARY
   #----------------------------------------------------------------
   - platform: template
@@ -174,6 +234,15 @@ sensor:
             {% set total = total + 1 %}
           {% endif %}
           {% if is_state('binary_sensor.blueiris_bedroom', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+          {% if is_state('binary_sensor.blueiris_driveway_front', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+          {% if is_state('binary_sensor.blueiris_driveway_rear', 'on') %}
+            {% set total = total + 1 %}
+          {% endif %}
+          {% if is_state('binary_sensor.blueiris_front_door', 'on') %}
             {% set total = total + 1 %}
           {% endif %}
 

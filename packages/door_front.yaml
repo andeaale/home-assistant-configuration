@@ -30,3 +30,26 @@ sensor:
           {% else %}
             Unknown
           {% endif %}
+
+automation:
+#----------------------------------------------------------------
+  - alias: NOTIFY (OPEN 10 MIN) Front Door
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.front_door_sensor_sensor_42_0
+        from: 'off'
+        to: 'on'
+        for:
+          hours: 0
+          minutes: 10
+          seconds: 0
+    condition:
+      - condition: state
+        entity_id: input_boolean.options_notifications_push
+        state: 'on'
+
+    action:
+    - service: notify.pushetta_carinajesse
+      data:
+        message: "Front Door Open For 10 Min!"
+        title: ""

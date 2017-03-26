@@ -63,6 +63,7 @@ group:
       - sensor.motion
       - group.doors_all
       - group.motion_indoor_camera_all
+      - group.motion_outdoor_camera_all
 
   audio_view:
     name: Audio
@@ -80,8 +81,10 @@ group:
       - media_player.living_room_plex
       - media_player.kitchen_plex
       - media_player.ryans_bedroom_plex
-      - group._plex_devices_active
-      # - group._plex_devices_inactive
+      - media_player.plex_bb72ed6a42aa26ea_com_plexapp_android
+      - media_player.plex_mwmj7d2er7m34n29
+      - media_player.plex_7b8c4c63_38ff_417d_ac14_0457796ee1c1
+      - media_player.plex_a71ac5a0652e6d9bfc21f7da5b03f1ca
 
   scenes_view:
     name: Scenes
